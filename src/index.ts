@@ -8,7 +8,7 @@ import { swaggerSpec, swaggerUi } from './app/swagger';
 app.use(express.json())
 
 app.get("/", (req, res) => {
-    res.json({message: "olá mundo"}).status(200)
+    res.json({message: "Seja bem vindo {nome}"}).status(200)
 })
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
