@@ -17,10 +17,12 @@
     "@types/node": "^22.5.4",
     "express": "^4.19.2",
     "nodemon": "^3.1.4",
-    "prisma": "^5.19.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
+  },
+  "devDependencies": {
+    "prisma": "^5.19.1"
   }
 }
