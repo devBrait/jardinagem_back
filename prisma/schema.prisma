@@ -7,8 +7,58 @@ datasource db {
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
-model User {
-  id    Int    @id @default(autoincrement())
-  name  String
+model Cliente {
+  id    Int   @id @default(autoincrement())
+  CPF Int @unique
+  nome  String
   email String @unique
+  data_nascimento DateTime
+  CEP String
+  telefone Int
+}
+
+model Fornecedor {
+  id Int @id @default(autoincrement())
+  plantas Planta[]
+  CNPJ Int @unique
+  razao_social String
+  ctt_1 String
+  telefone_1 Int
+  ctt_2 String
+  telefone_2 Int
+  email String @unique
+  site String
+  instagram String
+  CEP String @unique
+  obs String
+  ativo Boolean
+
+}
+
+model Planta {
+  
+  id Int @id @default(autoincrement())
+  fornecedor Fornecedor @relation(fields:[idFornecedor], references: [id])
+  idFornecedor Int
+  nome_social String
+  nome_cientifico String
+  variedade String
+  cor_floracao String
+  porte String
+  topiaria String
+  forma_tronco String
+  quant_ramos Int
+  dap Int
+  diametro_copa Float
+  altura_ramo Float
+  altura_total Float
+  peso_medio Float
+  volume Int
+  entouceirada Boolean
+  tutorada Boolean
+  embalagem String
+  diametro_base Float
+  concatenar_diametro Boolean
+  obs String
+  ativo Boolean
 }
