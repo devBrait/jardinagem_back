@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/index.ts",
     "migrate": "prisma migrate dev"
   },
@@ -23,6 +22,7 @@
     "typescript": "^5.5.4"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.2",
     "prisma": "^5.19.1"
   }
 }
