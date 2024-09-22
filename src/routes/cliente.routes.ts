@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-import { registerAsync } from '../api/controllers/clienteController'
+import { cadastroAsync, loginAsync } from '../api/controllers/clienteController'
 
 const clienteRouter = Router()
 
@@ -14,7 +14,7 @@ const clienteRouter = Router()
  * @swagger
  * /clientes:
  *   post:
- *     summary: Cria um novo cliente
+ *     summary: Cadastro de cliente
  *     tags: [Clientes]
  *     requestBody:
  *       required: true
@@ -42,6 +42,9 @@ const clienteRouter = Router()
  *               telefone:
  *                  type: string
  *                  example: "11 9 1234-0631"
+ *               senha:
+ *                  type: string
+ *                  example: "1234"
  *     responses:
  *       201:
  *         description: Cliente criado com sucesso
@@ -49,6 +52,32 @@ const clienteRouter = Router()
  *         description: Requisição inválida
  */
 
-clienteRouter.post('/', registerAsync)
+clienteRouter.post('/', cadastroAsync)
+/**
+ * @swagger
+ * /clientes/login:
+ *   post:
+ *     summary: Login de cliente
+ *     tags: [Clientes]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "joao.pereira@example.com"
+ *               senha:
+ *                 type: string
+ *                 example: "1234"
+ *     responses:
+ *       200:
+ *         description: Login bem-sucedido
+ *       400:
+ *         description: Credenciais inválidas
+ */
+clienteRouter.post('/login', loginAsync)
 
 export default clienteRouter

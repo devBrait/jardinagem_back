@@ -1,10 +1,28 @@
-import { createAsync } from '../services/clienteService'
+import { createAsync, verificaLoginAsync } from '../services/clienteService'
 
-export const registerAsync = async (req, res) => {
+export const cadastroAsync = async (req, res) => {
   try {
-    const user = await createAsync(req.body)
-    res.status(201).json(user)
+    const cliente = await createAsync(req.body)
+
+    const clienteResponse = {
+      ...cliente,
+      CPF: Number(cliente.CPF), // Problema de bigInt com json
+    }
+
+    res.status(201).json(clienteResponse)
   } catch (error) {
+    console.error('Erro ao cadastrar cliente:', error)
     res.status(500).json({ error: 'Erro ao cadastrar cliente' })
+  }
+}
+
+export const loginAsync = async (req, res) => {
+  const { email, senha } = req.body
+  try {
+    await verificaLoginAsync(email, senha)
+    res.status(200).json({ message: 'Login realizado com sucesso' })
+  } catch (error) {
+    console.error('Erro ao cadastrar cliente:', error)
+    res.status(500).json({ error: 'Erro ao realizar o login' })
   }
 }

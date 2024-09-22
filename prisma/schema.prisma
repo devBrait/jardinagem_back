@@ -9,18 +9,19 @@ datasource db {
 }
 model Cliente {
   id    Int   @id @default(autoincrement())
-  CPF Int @unique
+  CPF BigInt @unique
   nome  String
   email String @unique
   data_nascimento DateTime
   CEP String
   telefone Int
+  senha String
 }
 
 model Fornecedor {
   id Int @id @default(autoincrement())
   plantas Planta[]
-  CNPJ Int @unique
+  CNPJ BigInt @unique
   razao_social String
   ctt_1 String
   telefone_1 Int
@@ -32,7 +33,7 @@ model Fornecedor {
   CEP String @unique
   obs String
   ativo Boolean
-
+  senha String
 }
 
 model Planta {

@@ -2,9 +2,11 @@ import { verificaClienteAsync } from '../repositories/clienteRepositoy'
 import { prisma } from '../../database/prisma'
 
 export const createAsync = async data => {
-  const { nome, CPF, email, data_nascimento, CEP, telefone } = data
+  const { nome, CPF, email, data_nascimento, CEP, telefone, senha } = data
 
-  const verificaCliente = await verificaClienteAsync(CPF, email)
+  const cpf_inteiro = Number.parseInt(CPF.replace(/\D/g, ''), 10)
+  const dataNascimento = new Date(data_nascimento)
+  const verificaCliente = await verificaClienteAsync(cpf_inteiro, email)
 
   // Tratamento de erro: CPF ou Email já cadastrados
   if (verificaCliente != null) {
@@ -14,11 +16,30 @@ export const createAsync = async data => {
   return await prisma.cliente.create({
     data: {
       nome,
-      CPF,
+      CPF: cpf_inteiro,
       email,
-      data_nascimento,
+      data_nascimento: dataNascimento,
       CEP,
       telefone,
+      senha,
     },
   })
+}
+
+export const verificaLoginAsync = async (email, senha) => {
+  console.log(email)
+  const cliente = await prisma.cliente.findFirst({
+    where: { email },
+  })
+  console.log('Cliente encontrado:', cliente)
+
+  if (cliente == null) {
+    throw new Error('Usuário não encontrado')
+  }
+
+  if (cliente.senha !== senha) {
+    throw new Error('Senha incorreta')
+  }
+
+  return true
 }
