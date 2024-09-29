@@ -1,0 +1,6 @@
+-- AlterTable
+ALTER TABLE "Cliente" ALTER COLUMN "telefone" SET DATA TYPE BIGINT;
+
+-- AlterTable
+ALTER TABLE "Fornecedor" ALTER COLUMN "telefone_1" SET DATA TYPE BIGINT,
+ALTER COLUMN "telefone_2" SET DATA TYPE BIGINT;

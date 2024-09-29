@@ -7,11 +7,11 @@ export const cadastroAsync = async (req, res) => {
     const clienteResponse = {
       ...cliente,
       CPF: Number(cliente.CPF), // Problema de bigInt com json
+      telefone: Number(cliente.telefone),
     }
 
     res.status(201).json(clienteResponse)
   } catch (error) {
-    console.error('Erro ao cadastrar cliente:', error)
     res.status(500).json({ error: 'Erro ao cadastrar cliente' })
   }
 }

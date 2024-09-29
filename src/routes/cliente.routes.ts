@@ -40,8 +40,8 @@ const clienteRouter = Router()
  *                  type: string
  *                  example: "11111-100"
  *               telefone:
- *                  type: string
- *                  example: "11 9 1234-0631"
+ *                  type: int
+ *                  example: 11912340631
  *               senha:
  *                  type: string
  *                  example: "1234"

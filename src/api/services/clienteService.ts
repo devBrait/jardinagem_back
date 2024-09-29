@@ -27,14 +27,13 @@ export const createAsync = async data => {
 }
 
 export const verificaLoginAsync = async (email, senha) => {
-  console.log(email)
   const cliente = await prisma.cliente.findFirst({
     where: { email },
   })
   console.log('Cliente encontrado:', cliente)
 
   if (cliente == null) {
-    throw new Error('Usuário não encontrado')
+    throw new Error('Cliente não encontrado')
   }
 
   if (cliente.senha !== senha) {

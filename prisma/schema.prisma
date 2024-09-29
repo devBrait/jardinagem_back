@@ -14,7 +14,7 @@ model Cliente {
   email String @unique
   data_nascimento DateTime
   CEP String
-  telefone Int
+  telefone BigInt
   senha String
 }
 
@@ -22,11 +22,12 @@ model Fornecedor {
   id Int @id @default(autoincrement())
   plantas Planta[]
   CNPJ BigInt @unique
+  nome_fantasia String
   razao_social String
   ctt_1 String
-  telefone_1 Int
+  telefone_1 BigInt
   ctt_2 String
-  telefone_2 Int
+  telefone_2 BigInt
   email String @unique
   site String
   instagram String
