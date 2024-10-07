@@ -52,7 +52,6 @@ export const verificaLoginAsync = async (email, senha) => {
   const fornecedor = await prisma.fornecedor.findFirst({
     where: { email },
   })
-  console.log('Fornecedor encontrado:', fornecedor)
 
   if (fornecedor == null) {
     throw new Error('Fornecedor não encontrado')

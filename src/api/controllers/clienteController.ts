@@ -15,14 +15,16 @@ export const cadastroAsync = async (req, res) => {
     res.status(500).json({ error: 'Erro ao cadastrar cliente' })
   }
 }
-
 export const loginAsync = async (req, res) => {
   const { email, senha } = req.body
   try {
-    await verificaLoginAsync(email, senha)
-    res.status(200).json({ message: 'Login realizado com sucesso' })
+    const loginSuccessful = await verificaLoginAsync(email, senha)
+    return res
+      .status(200)
+      .json({ success: true, message: 'Login realizado com sucesso' })
   } catch (error) {
-    console.error('Erro ao cadastrar cliente:', error)
-    res.status(500).json({ error: 'Erro ao realizar o login' })
+    return res
+      .status(500)
+      .json({ success: false, error: 'Erro ao realizar o login' })
   }
 }

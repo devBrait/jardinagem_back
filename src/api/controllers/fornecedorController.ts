@@ -21,8 +21,10 @@ export const loginAsync = async (req, res) => {
   const { email, senha } = req.body
   try {
     await verificaLoginAsync(email, senha)
-    res.status(200).json({ message: 'Login realizado com sucesso' })
+    res
+      .status(200)
+      .json({ success: true, message: 'Login realizado com sucesso' })
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao realizar o login' })
+    res.status(500).json({ success: false, error: 'Erro ao realizar o login' })
   }
 }
