@@ -3,10 +3,9 @@ import { prisma } from '../../database/prisma'
 
 export const createAsync = async data => {
   const { nome, CPF, email, data_nascimento, CEP, telefone, senha } = data
-
-  const cpf_inteiro = Number.parseInt(CPF.replace(/\D/g, ''), 10)
-  const dataNascimento = new Date(data_nascimento)
-  const verificaCliente = await verificaClienteAsync(cpf_inteiro, email)
+  const dataNascimento =
+    data_nascimento == null ? new Date() : new Date(data_nascimento)
+  const verificaCliente = await verificaClienteAsync(CPF, email)
 
   // Tratamento de erro: CPF ou Email já cadastrados
   if (verificaCliente != null) {
@@ -16,10 +15,10 @@ export const createAsync = async data => {
   return await prisma.cliente.create({
     data: {
       nome,
-      CPF: cpf_inteiro,
+      CPF,
       email,
       data_nascimento: dataNascimento,
-      CEP,
+      CEP: CEP == null ? '' : CEP,
       telefone,
       senha,
     },

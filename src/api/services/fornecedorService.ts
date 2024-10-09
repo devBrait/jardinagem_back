@@ -4,10 +4,10 @@ import { prisma } from '../../database/prisma'
 export const createAsync = async data => {
   const {
     CNPJ,
-    nome_fantasia,
+    nome,
     razao_social,
-    ctt_1,
-    telefone_1,
+    empresa,
+    telefone,
     ctt_2,
     telefone_2,
     email,
@@ -18,9 +18,6 @@ export const createAsync = async data => {
     ativo,
     senha,
   } = data
-
-  const cnpj_inteiro = Number.parseInt(CNPJ.replace(/\D/g, ''), 10)
-
   const verificaFornecedor = await verificaFornecedorAsync(CNPJ, email)
 
   // Tratamento de erro: CNPJ ou Email já cadastrados
@@ -30,18 +27,18 @@ export const createAsync = async data => {
 
   return await prisma.fornecedor.create({
     data: {
-      CNPJ: cnpj_inteiro,
-      nome_fantasia,
-      razao_social,
-      ctt_1,
-      telefone_1,
-      ctt_2,
-      telefone_2,
+      CNPJ,
+      nome_fantasia: nome,
+      razao_social: empresa,
+      ctt_1: nome,
+      telefone_1: telefone,
+      ctt_2: ctt_2 == null ? '' : ctt_2,
+      telefone_2: telefone_2 == null ? 0 : telefone_2,
       email,
-      site,
-      instagram,
+      site: site == null ? '' : site,
+      instagram: instagram == null ? '' : instagram,
       CEP,
-      obs,
+      obs: obs == null ? '' : obs,
       ativo: ativo ?? true, // Caso não seja fornecidor se ativo ou não
       senha,
     },

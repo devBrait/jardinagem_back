@@ -2,7 +2,15 @@ import { createAsync, verificaLoginAsync } from '../services/clienteService'
 
 export const cadastroAsync = async (req, res) => {
   try {
-    const cliente = await createAsync(req.body)
+    const { email, senha, nome, telefone, CPF } = req.body
+    const clienteData = {
+      email: email,
+      senha: senha,
+      nome: nome,
+      telefone: telefone,
+      CPF: CPF,
+    }
+    const cliente = await createAsync(clienteData)
 
     const clienteResponse = {
       ...cliente,
@@ -12,6 +20,7 @@ export const cadastroAsync = async (req, res) => {
 
     res.status(201).json(clienteResponse)
   } catch (error) {
+    console.log(error.message)
     res.status(500).json({ error: 'Erro ao cadastrar cliente' })
   }
 }

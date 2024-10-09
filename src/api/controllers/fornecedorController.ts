@@ -2,7 +2,17 @@ import { createAsync, verificaLoginAsync } from '../services/fornecedorService'
 
 export const cadastroAsync = async (req, res) => {
   try {
-    const fornecedor = await createAsync(req.body)
+    const { email, senha, nome, telefone, CNPJ, CEP, empresa } = req.body
+    const fornecedorData = {
+      email: email,
+      senha: senha,
+      nome: nome,
+      telefone: telefone,
+      CNPJ: CNPJ,
+      CEP: CEP,
+      empresa: empresa,
+    }
+    const fornecedor = await createAsync(fornecedorData)
 
     const fornecedorResponse = {
       ...fornecedor,
