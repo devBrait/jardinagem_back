@@ -16,6 +16,7 @@ model Cliente {
   CEP String
   telefone BigInt
   senha String
+  pedidos Pedido[]
 }
 
 model Fornecedor {
@@ -38,7 +39,6 @@ model Fornecedor {
 }
 
 model Planta {
-  
   id Int @id @default(autoincrement())
   fornecedor Fornecedor @relation(fields:[idFornecedor], references: [id])
   idFornecedor Int
@@ -63,4 +63,26 @@ model Planta {
   concatenar_diametro Boolean
   obs String
   ativo Boolean
+  pedidoItems PedidoItem[]
 }
+
+model Pedido {
+  id             Int         @id @default(autoincrement())
+  cliente        Cliente     @relation(fields: [idCliente], references: [id])
+  idCliente      Int
+  data_criacao   DateTime    @default(now())
+  status         String
+  valor_total    Float
+  pedidoItems    PedidoItem[]
+}
+
+model PedidoItem {
+  id             Int         @id @default(autoincrement())
+  pedido         Pedido      @relation(fields: [idPedido], references: [id])
+  idPedido       Int
+  planta         Planta      @relation(fields: [idPlanta], references: [id])
+  idPlanta       Int
+  quantidade     Int
+  preco_unitario Float
+}
+
