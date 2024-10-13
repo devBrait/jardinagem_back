@@ -1,14 +1,88 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
+model Cliente {
+  id    Int   @id @default(autoincrement())
+  CPF BigInt @unique
+  nome  String
+  email String @unique
+  data_nascimento DateTime
+  CEP String
+  telefone BigInt
+  senha String
+  pedidos Pedido[]
+}
+
+model Fornecedor {
+  id Int @id @default(autoincrement())
+  plantas Planta[]
+  CNPJ BigInt @unique
+  nome_fantasia String
+  razao_social String
+  ctt_1 String
+  telefone_1 BigInt
+  ctt_2 String
+  telefone_2 BigInt
+  email String @unique
+  site String
+  instagram String
+  CEP String @unique
+  obs String
+  ativo Boolean
+  senha String
+}
+
+model Planta {
+  id Int @id @default(autoincrement())
+  fornecedor Fornecedor @relation(fields:[idFornecedor], references: [id])
+  idFornecedor Int
+  nome_social String
+  nome_cientifico String
+  variedade String
+  cor_floracao String
+  porte String
+  topiaria String
+  forma_tronco String
+  quant_ramos Int
+  dap Int
+  diametro_copa Float
+  altura_ramo Float
+  altura_total Float
+  peso_medio Float
+  volume Int
+  entouceirada Boolean
+  tutorada Boolean
+  embalagem String
+  diametro_base Float
+  concatenar_diametro Boolean
+  obs String
+  ativo Boolean
+  pedidoItems PedidoItem[]
+}
+
+model Pedido {
+  id             Int         @id @default(autoincrement())
+  cliente        Cliente     @relation(fields: [idCliente], references: [id])
+  idCliente      Int
+  data_criacao   DateTime    @default(now())
+  status         String
+  valor_total    Float
+  pedidoItems    PedidoItem[]
+}
+
+model PedidoItem {
+  id             Int         @id @default(autoincrement())
+  pedido         Pedido      @relation(fields: [idPedido], references: [id])
+  idPedido       Int
+  planta         Planta      @relation(fields: [idPlanta], references: [id])
+  idPlanta       Int
+  quantidade     Int
+  preco_unitario Float
+}
+
