@@ -1,8 +1,8 @@
-import { Router } from "express"
-import { createAsync } from "api/services/pedidoService"
+import { Router } from 'express'
+import { cadastraPedido } from '../api/controllers/pedidoController'
 
 const pedidoRouter = Router()
 
-pedidoRouter.post('/pedido', createAsync)
+pedidoRouter.post('/pedido', cadastraPedido)
 
 export default pedidoRouter

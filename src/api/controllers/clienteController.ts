@@ -20,7 +20,6 @@ export const cadastroAsync = async (req, res) => {
 
     res.status(201).json(clienteResponse)
   } catch (error) {
-    console.log(error.message)
     res.status(500).json({ error: 'Erro ao cadastrar cliente' })
   }
 }
@@ -32,6 +31,7 @@ export const loginAsync = async (req, res) => {
       .status(200)
       .json({ success: true, message: 'Login realizado com sucesso' })
   } catch (error) {
+    console.error(error.message)
     return res
       .status(500)
       .json({ success: false, error: 'Erro ao realizar o login' })
