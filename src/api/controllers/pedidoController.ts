@@ -1,4 +1,5 @@
 import { createAsync } from '../services/pedidoService'
+import { retornaStatus } from '../services/pedidoService'
 
 export const cadastraPedido = async (req, res) => {
   try {
@@ -23,5 +24,17 @@ export const cadastraPedido = async (req, res) => {
     return res.status(201).send(pedidoResponse)
   } catch (error) {
     res.status(500).json({ error: 'erro ao cadastrar pedido' })
+  }
+}
+
+export const verificaStatus = async (req, res) => {
+  try{
+    const id = req.params
+    const status = await retornaStatus(id)
+
+    return res.status(201).json(status)
+  }
+  catch(error){
+    res.status(500).json({error: "ocorreu um erro ao ler o status do pedido"})
   }
 }

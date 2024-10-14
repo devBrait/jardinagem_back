@@ -1,4 +1,5 @@
 import { prisma } from '../../database/prisma'
+import { retornaPedido } from 'api/repositories/pedidoRepository'
 
 export const createAsync = async data => {
     const { cliente, data_criacao, status, valor_total, pedidoItems } = data
@@ -14,4 +15,16 @@ export const createAsync = async data => {
             pedidoItems,
         }
     })
+}
+
+export const retornaStatus = async (id: number) => {
+    try{
+        const pedido = await retornaPedido(id)
+        const status = pedido.status
+
+        return status
+    }
+    catch(error){
+        return error
+    }
 }
