@@ -3,9 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": "20"
+  },
   "scripts": {
     "dev": "nodemon src/index.ts",
-    "migrate": "prisma migrate dev"
+    "migrate": "prisma migrate dev",
+    "build": "tsup src",
+    "start": "node dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +29,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.2",
-    "prisma": "^5.19.1"
+    "prisma": "^5.19.1",
+    "tsup": "^8.3.0"
   }
 }
