@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { cadastraPedido } from '../api/controllers/pedidoController'
+import { verificaStatus } from '../api/controllers/pedidoController'
 
 const pedidoRouter = Router()
 /**
@@ -80,5 +81,46 @@ const pedidoRouter = Router()
  *                   example: "Erro na requisição. Dados do pedido inválidos."
  */
 pedidoRouter.post('/pedido', cadastraPedido)
+
+/**
+ * @swagger
+ * /pedidos/{id}:
+ *   get:
+ *     summary: Obter status do pedido
+ *     tags: [Pedidos]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *          type: integer 
+ *         required: true
+ *         description: Obter status do pedido através do ID
+ *     responses:
+ *       201:
+ *         description: Status do pedido retornado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Status do pedido retornado com sucesso."
+ *                 status:
+ *                   type: string
+ *                   example: "Pendente"
+ *                   description: Status do pedido
+ *       400:
+ *         description: Requisição inválida
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Erro na requisição. ID do pedido inválidos."
+ */
+pedidoRouter.get('/:id', verificaStatus)
 
 export default pedidoRouter
