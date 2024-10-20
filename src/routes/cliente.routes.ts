@@ -30,8 +30,8 @@ const clienteRouter = Router()
  *                 type: string
  *                 example: "joao.pereira@example.com"
  *               CPF:
- *                  type: string
- *                  example: "111.222.333-44"
+ *                  type: int
+ *                  example: 11122233344
  *               data_nascimento:
  *                  type: string
  *                  format: date
@@ -44,7 +44,7 @@ const clienteRouter = Router()
  *                  example: 11912340631
  *               senha:
  *                  type: string
- *                  example: "1234"
+ *                  example: "123456"
  *     responses:
  *       201:
  *         description: Cliente criado com sucesso
@@ -71,7 +71,7 @@ clienteRouter.post('/', cadastroAsync)
  *                 example: "joao.pereira@example.com"
  *               senha:
  *                 type: string
- *                 example: "1234"
+ *                 example: "123456"
  *     responses:
  *       200:
  *         description: Login bem-sucedido

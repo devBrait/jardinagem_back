@@ -76,7 +76,7 @@ const fornecedorRouter = Router()
  *                 example: true
  *               senha:
  *                 type: string
- *                 example: "1234"
+ *                 example: "123456"
  *                 description: Senha para acesso ao sistema
  *     responses:
  *       201:
@@ -123,7 +123,7 @@ fornecedorRouter.post('/', cadastroAsync)
  *                 example: "empresa@xyz.com"
  *               senha:
  *                 type: string
- *                 example: "1234"
+ *                 example: "123456"
  *     responses:
  *       200:
  *         description: Login bem-sucedido

@@ -1,5 +1,9 @@
 import { verificaFornecedorAsync } from '../repositories/fornecedorRepositoy'
 import { prisma } from '../../database/prisma'
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+
+const senha_jwt = process.env.JWT_SECRET
 
 export const createAsync = async data => {
   const {
@@ -18,6 +22,9 @@ export const createAsync = async data => {
     ativo,
     senha,
   } = data
+
+  const senhaCriptografada = await bcrypt.hash(senha, 10)
+
   const verificaFornecedor = await verificaFornecedorAsync(CNPJ, email)
 
   // Tratamento de erro: CNPJ ou Email já cadastrados
@@ -40,7 +47,7 @@ export const createAsync = async data => {
       CEP,
       obs: obs == null ? '' : obs,
       ativo: ativo ?? true, // Caso não seja fornecidor se ativo ou não
-      senha,
+      senha: senhaCriptografada,
     },
   })
 }
@@ -54,9 +61,19 @@ export const verificaLoginAsync = async (email, senha) => {
     throw new Error('Fornecedor não encontrado')
   }
 
-  if (fornecedor.senha !== senha) {
+  const senhaValida = await bcrypt.compare(senha, fornecedor.senha)
+
+  if (!senhaValida) {
     throw new Error('Senha incorreta')
   }
 
-  return true
+  const token = jwt.sign(
+    { id: fornecedor.id, email: fornecedor.email },
+    senha_jwt,
+    {
+      expiresIn: '1h',
+    }
+  )
+
+  return { token }
 }

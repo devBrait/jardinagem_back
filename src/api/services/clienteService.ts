@@ -1,8 +1,16 @@
 import { verificaClienteAsync } from '../repositories/clienteRepositoy'
 import { prisma } from '../../database/prisma'
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+
+const senha_jwt = process.env.JWT_SECRET
 
 export const createAsync = async data => {
   const { nome, CPF, email, data_nascimento, CEP, telefone, senha } = data
+
+  // Criptografar a senha antes de salvar no banco
+  const senhaCriptografada = await bcrypt.hash(senha, 10)
+
   const dataNascimento =
     data_nascimento == null ? new Date() : new Date(data_nascimento)
   const verificaCliente = await verificaClienteAsync(CPF, email)
@@ -20,7 +28,7 @@ export const createAsync = async data => {
       data_nascimento: dataNascimento,
       CEP: CEP == null ? '' : CEP,
       telefone,
-      senha,
+      senha: senhaCriptografada, // Usar a senha criptografada
     },
   })
 }
@@ -30,13 +38,22 @@ export const verificaLoginAsync = async (email, senha) => {
     where: { email },
   })
 
-  if (cliente == null) {
+  // Verificar se o cliente existe
+  if (!cliente) {
     throw new Error('Cliente não encontrado')
   }
 
-  if (cliente.senha !== senha) {
+  // Compara senha criptografada
+  const senhaValida = await bcrypt.compare(senha, cliente.senha)
+
+  if (!senhaValida) {
     throw new Error('Senha incorreta')
   }
 
-  return true
+  // Geração do token JWT com os dados do cliente
+  const token = jwt.sign({ id: cliente.id, email: cliente.email }, senha_jwt, {
+    expiresIn: '1h',
+  })
+
+  return { token }
 }
