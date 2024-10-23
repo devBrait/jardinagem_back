@@ -15,20 +15,23 @@ export const cadastroAsync = async (req, res) => {
       CEP: CEP,
       empresa: empresa,
     }
-    const fornecedor = await createAsync(fornecedorData)
+    const { fornecedor, token } = await createAsync(fornecedorData)
+    const { senha: senhaOmitida, ...fornecedorSemSenha } = fornecedor
 
-    const token = jwt.sign(
-      { id: fornecedor.id, email: fornecedor.email },
-      senha_jwt,
-      { expiresIn: '1h' }
-    )
+    // Define o cookie com o token JWT
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 1000, // 1 hora
+    })
 
     const response = {
-      ...fornecedor,
-      CNPJ: fornecedor.CNPJ.toString(),
-      telefone_1: Number(fornecedor.telefone_1),
-      telefone_2: Number(fornecedor.telefone_2),
-      token,
+      ...fornecedorSemSenha,
+      CNPJ: fornecedorSemSenha.CNPJ.toString(),
+      telefone_1: Number(fornecedorSemSenha.telefone_1),
+      telefone_2: Number(fornecedorSemSenha.telefone_2),
+      tipoUsuario: 'fornecedor',
     }
 
     res.status(201).json(response)
@@ -38,12 +41,24 @@ export const cadastroAsync = async (req, res) => {
 }
 
 export const loginAsync = async (req, res) => {
-  const { email, senha } = req.body
   try {
+    const { email, senha } = req.body
+
     const { token } = await verificaLoginAsync(email, senha)
-    res
-      .status(200)
-      .json({ success: true, message: 'Login realizado com sucesso', token })
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 1000, // 1 hora
+    })
+
+    res.status(200).json({
+      success: true,
+      message: 'Login realizado com sucesso',
+      email,
+      tipoUsuario: 'fornecedor',
+    })
   } catch (error) {
     res.status(500).json({ success: false, error: 'Erro ao realizar o login' })
   }

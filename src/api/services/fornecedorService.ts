@@ -32,7 +32,7 @@ export const createAsync = async data => {
     throw new Error(verificaFornecedor)
   }
 
-  return await prisma.fornecedor.create({
+  const fornecedor = await prisma.fornecedor.create({
     data: {
       CNPJ,
       nome_fantasia: nome,
@@ -50,6 +50,17 @@ export const createAsync = async data => {
       senha: senhaCriptografada,
     },
   })
+
+  // Geração do token JWT com os dados do cliente
+  const token = jwt.sign(
+    { id: fornecedor.id, email: fornecedor.email },
+    senha_jwt,
+    {
+      expiresIn: '1h',
+    }
+  )
+
+  return { fornecedor, token }
 }
 
 export const verificaLoginAsync = async (email, senha) => {
@@ -75,5 +86,5 @@ export const verificaLoginAsync = async (email, senha) => {
     }
   )
 
-  return { token }
+  return { fornecedor, token }
 }

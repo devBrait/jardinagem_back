@@ -15,6 +15,7 @@ model Cliente {
   data_nascimento DateTime
   CEP String
   telefone BigInt
+  ativo Boolean
   senha String
   pedidos Pedido[]
 }
@@ -42,8 +43,7 @@ model Planta {
   id Int @id @default(autoincrement())
   fornecedor Fornecedor @relation(fields:[idFornecedor], references: [id])
   idFornecedor Int
-  nome_social String
-  nome_cientifico String
+  nome_cientifico String @unique
   variedade String
   cor_floracao String
   porte String
@@ -63,7 +63,14 @@ model Planta {
   concatenar_diametro Boolean
   obs String
   ativo Boolean
+  nomes_populares   Nome_popular[]
   pedidoItems PedidoItem[]
+}
+model Nome_popular {
+  id                Int            @id @default(autoincrement())
+  nome              String         
+  planta            Planta         @relation(fields: [idPlanta], references: [id])
+  idPlanta          Int
 }
 
 model Pedido {

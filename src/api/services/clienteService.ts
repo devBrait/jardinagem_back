@@ -6,13 +6,16 @@ import jwt from 'jsonwebtoken'
 const senha_jwt = process.env.JWT_SECRET
 
 export const createAsync = async data => {
-  const { nome, CPF, email, data_nascimento, CEP, telefone, senha } = data
+  const { nome, CPF, email, data_nascimento, CEP, telefone, ativo, senha } =
+    data
 
   // Criptografar a senha antes de salvar no banco
   const senhaCriptografada = await bcrypt.hash(senha, 10)
 
   const dataNascimento =
     data_nascimento == null ? new Date() : new Date(data_nascimento)
+
+  // Verifica se o cliente já existe pelo CPF ou email
   const verificaCliente = await verificaClienteAsync(CPF, email)
 
   // Tratamento de erro: CPF ou Email já cadastrados
@@ -20,7 +23,8 @@ export const createAsync = async data => {
     throw new Error(verificaCliente)
   }
 
-  return await prisma.cliente.create({
+  // Criação do cliente no banco de dados
+  const cliente = await prisma.cliente.create({
     data: {
       nome,
       CPF,
@@ -28,9 +32,17 @@ export const createAsync = async data => {
       data_nascimento: dataNascimento,
       CEP: CEP == null ? '' : CEP,
       telefone,
+      ativo: ativo ?? true,
       senha: senhaCriptografada, // Usar a senha criptografada
     },
   })
+
+  // Geração do token JWT com os dados do cliente
+  const token = jwt.sign({ id: cliente.id, email: cliente.email }, senha_jwt, {
+    expiresIn: '1h',
+  })
+
+  return { cliente, token }
 }
 
 export const verificaLoginAsync = async (email, senha) => {
@@ -43,7 +55,7 @@ export const verificaLoginAsync = async (email, senha) => {
     throw new Error('Cliente não encontrado')
   }
 
-  // Compara senha criptografada
+  // Compara a senha criptografada
   const senhaValida = await bcrypt.compare(senha, cliente.senha)
 
   if (!senhaValida) {
@@ -55,5 +67,5 @@ export const verificaLoginAsync = async (email, senha) => {
     expiresIn: '1h',
   })
 
-  return { token }
+  return { cliente, token }
 }

@@ -1,35 +1,38 @@
 import { createAsync, verificaLoginAsync } from '../services/clienteService'
-import jwt from 'jsonwebtoken'
-
-const senha_jwt = process.env.JWT_SECRET
 
 export const cadastroAsync = async (req, res) => {
   try {
-    const { email, senha, nome, telefone, CPF } = req.body
-    const clienteData = {
+    const { email, senha, nome, telefone, CPF, data_nascimento, CEP, ativo } =
+      req.body
+
+    // Chama o serviço para criar o cliente e gerar o token
+    const { cliente, token } = await createAsync({
       email,
       senha,
       nome,
       telefone,
       CPF,
-    }
+      data_nascimento,
+      CEP,
+      ativo,
+    })
 
-    // Criação do cliente
-    const cliente = await createAsync(clienteData)
+    // Define o cookie com o token JWT
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 1000, // 1 hora
+    })
 
-    // Geração do token JWT
-    const token = jwt.sign(
-      { id: cliente.id, email: cliente.email },
-      senha_jwt,
-      { expiresIn: '1h' }
-    )
+    // Cria uma cópia do objeto cliente sem o campo 'senha' e converte os campos BigInt
+    const { senha: senhaOmitida, ...clienteSemSenha } = cliente
 
-    // Remover a senha do objeto de resposta
     const response = {
-      ...cliente,
-      CPF: Number(cliente.CPF), // Problema de bigInt com json
-      telefone: Number(cliente.telefone),
-      token,
+      ...clienteSemSenha,
+      CPF: Number(clienteSemSenha.CPF), // Converte BigInt para string
+      telefone: Number(clienteSemSenha.telefone), // Converte BigInt para string
+      tipoUsuario: 'cliente',
     }
 
     res.status(201).json({ response })
@@ -39,29 +42,24 @@ export const cadastroAsync = async (req, res) => {
 }
 
 export const loginAsync = async (req, res) => {
-  const { email, senha } = req.body
   try {
+    const { email, senha } = req.body
+    console.log(senha)
+    // Chama o serviço para verificar o login e gerar o token
     const { token } = await verificaLoginAsync(email, senha)
 
-    return res.status(200).json({
-      success: true,
-      message: 'Login realizado com sucesso',
-      token,
+    // Define o cookie com o token JWT
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 1000, // 1 hora
     })
-  } catch (error) {
-    if (
-      error.message === 'Cliente não encontrado' ||
-      error.message === 'Senha incorreta'
-    ) {
-      return res.status(401).json({
-        success: false,
-        error: error.message,
-      })
-    }
 
-    return res.status(500).json({
-      success: false,
-      error: 'Erro ao realizar o login',
-    })
+    res
+      .status(200)
+      .json({ message: 'Login bem-sucedido', email, tipoUsuario: 'cliente' })
+  } catch (error) {
+    res.status(400).json({ error: error.message })
   }
 }
