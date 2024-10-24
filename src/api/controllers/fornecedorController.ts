@@ -1,8 +1,11 @@
-import { createAsync, verificaLoginAsync } from '../services/fornecedorService'
-import jwt from 'jsonwebtoken'
+import {
+  createAsync,
+  novaSenhaAsync,
+  verificaLoginAsync,
+} from '../services/fornecedorService'
+import nodemailer from 'nodemailer'
 
-const senha_jwt = process.env.JWT_SECRET
-
+// POST
 export const cadastroAsync = async (req, res) => {
   try {
     const { email, senha, nome, telefone, CNPJ, CEP, empresa } = req.body
@@ -21,7 +24,7 @@ export const cadastroAsync = async (req, res) => {
     // Define o cookie com o token JWT
     res.cookie('token', token, {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 60 * 60 * 1000, // 1 hora
     })
@@ -34,12 +37,22 @@ export const cadastroAsync = async (req, res) => {
       tipoUsuario: 'fornecedor',
     }
 
-    res.status(201).json(response)
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Bem-vindo ao nosso site!',
+      text: `Olá ${nome},\n\nObrigado por se cadastrar no nosso site! Estamos felizes em tê-lo conosco.\n\nAtenciosamente,\nEquipe UmEntrePosto`,
+    }
+
+    res.status(201).json({ success: true, response })
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao cadastrar fornecedor' })
+    res
+      .status(500)
+      .json({ success: false, error: 'Erro ao cadastrar fornecedor' })
   }
 }
 
+// POST
 export const loginAsync = async (req, res) => {
   try {
     const { email, senha } = req.body
@@ -48,7 +61,7 @@ export const loginAsync = async (req, res) => {
 
     res.cookie('token', token, {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 60 * 60 * 1000, // 1 hora
     })
@@ -56,10 +69,24 @@ export const loginAsync = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'Login realizado com sucesso',
-      email,
-      tipoUsuario: 'fornecedor',
     })
   } catch (error) {
     res.status(500).json({ success: false, error: 'Erro ao realizar o login' })
+  }
+}
+
+// PUT
+export const redefinirSenha = async (req, res) => {
+  try {
+    const { email, senha } = req.body
+
+    await novaSenhaAsync(email, senha)
+
+    res.status(200).json({
+      success: true,
+      message: 'Senha redefinida com sucesso',
+    })
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Erro ao redefinir a senha' })
   }
 }

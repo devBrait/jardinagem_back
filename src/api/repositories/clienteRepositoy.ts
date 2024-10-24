@@ -27,3 +27,15 @@ export const verificaClienteAsync = async (cpf: number, email: string) => {
     throw new Error(`Erro ao verificar cliente: ${error.message}`)
   }
 }
+
+export const clienteByEmailAsync = async (email: string) => {
+  try {
+    const cliente = await prisma.cliente.findUnique({
+      where: { email: email },
+    })
+
+    return cliente
+  } catch (error) {
+    throw new Error(`Erro ao buscar cliente por email: ${error.message}`)
+  }
+}

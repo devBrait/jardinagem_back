@@ -1,5 +1,11 @@
-import { createAsync, verificaLoginAsync } from '../services/clienteService'
+import {
+  createAsync,
+  senhaNovaAsync,
+  verificaLoginAsync,
+} from '../services/clienteService'
+import nodemailer from 'nodemailer'
 
+// POST
 export const cadastroAsync = async (req, res) => {
   try {
     const { email, senha, nome, telefone, CPF, data_nascimento, CEP, ativo } =
@@ -20,7 +26,7 @@ export const cadastroAsync = async (req, res) => {
     // Define o cookie com o token JWT
     res.cookie('token', token, {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 60 * 60 * 1000, // 1 hora
     })
@@ -35,31 +41,45 @@ export const cadastroAsync = async (req, res) => {
       tipoUsuario: 'cliente',
     }
 
-    res.status(201).json({ response })
+    res.status(201).json({ success: true, response })
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao cadastrar cliente' })
+    res.status(500).json({ success: false, error: 'Erro ao cadastrar cliente' })
   }
 }
 
+// POST
 export const loginAsync = async (req, res) => {
   try {
     const { email, senha } = req.body
-    console.log(senha)
     // Chama o serviço para verificar o login e gerar o token
     const { token } = await verificaLoginAsync(email, senha)
 
     // Define o cookie com o token JWT
     res.cookie('token', token, {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 60 * 60 * 1000, // 1 hora
     })
 
-    res
-      .status(200)
-      .json({ message: 'Login bem-sucedido', email, tipoUsuario: 'cliente' })
+    res.status(200).json({ success: true, message: 'Login bem-sucedido' })
   } catch (error) {
-    res.status(400).json({ error: error.message })
+    res.status(400).json({ sucess: false, error: error.message })
+  }
+}
+
+// PUT
+export const redefinirSenhaAsync = async (req, res) => {
+  try {
+    const { email, senha } = req.body
+
+    await senhaNovaAsync(email, senha)
+
+    res.status(200).json({
+      success: true,
+      message: 'Senha redefinida com sucesso',
+    })
+  } catch (error) {
+    res.status(400).json({ sucess: false, error: error.message })
   }
 }

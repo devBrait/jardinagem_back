@@ -1,10 +1,12 @@
 import { createAsync } from '../services/plantaService'
 
+// POST
 export const cadastroPlanta = async (req, res) => {
   try {
     const {
-      fornecedor,
-      nome_cientifico,
+      id_fornecedor,
+      id_nome_cientifico,
+      id_nome_popular,
       variedade,
       cor_floracao,
       porte,
@@ -28,8 +30,9 @@ export const cadastroPlanta = async (req, res) => {
     } = req.body
 
     const plantaData = {
-      fornecedor: fornecedor,
-      nome_cientifico: nome_cientifico,
+      id_fornecedor,
+      id_nome_cientifico,
+      id_nome_popular,
       variedade: variedade,
       cor_floracao: cor_floracao,
       porte: porte,
@@ -56,7 +59,7 @@ export const cadastroPlanta = async (req, res) => {
 
     const plantaResponse = {
       ...planta,
-      fornecedor: JSON.stringify(plantaData.fornecedor),
+      fornecedor: JSON.stringify(plantaData.id_fornecedor),
       pedidoItems: JSON.stringify(plantaData.pedidoItems),
     }
 

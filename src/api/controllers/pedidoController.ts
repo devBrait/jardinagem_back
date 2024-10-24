@@ -1,15 +1,26 @@
-import { createAsync } from '../services/pedidoService'
+import { createAsync, getAllAsync } from '../services/pedidoService'
 import { retornaStatus } from '../services/pedidoService'
 
+// POST
 export const cadastraPedido = async (req, res) => {
   try {
-    const { cliente, data_criacao, status, valor_total, pedidoItems } = req.body
+    const {
+      id,
+      data_criacao,
+      status,
+      valor_total,
+      CEP,
+      numero_endereco,
+      pedidoItems,
+    } = req.body
 
     const pedidoData = {
-      cliente: cliente,
+      id: id,
       data_criacao: data_criacao,
       status: status,
       valor_total: valor_total,
+      CEP: CEP,
+      numero_endereco: numero_endereco,
       pedidoItems: pedidoItems,
     }
 
@@ -17,7 +28,7 @@ export const cadastraPedido = async (req, res) => {
 
     const pedidoResponse = {
       ...pedido,
-      cliente: JSON.stringify(pedidoData.cliente),
+      cliente: JSON.stringify(pedidoData.id),
       pedidoItems: JSON.stringify(pedidoData.pedidoItems),
     }
 
@@ -27,14 +38,33 @@ export const cadastraPedido = async (req, res) => {
   }
 }
 
+// GET
 export const verificaStatus = async (req, res) => {
-  try{
+  try {
     const id = req.params
     const status = await retornaStatus(id)
 
     return res.status(201).json(status)
+  } catch (error) {
+    res.status(500).json({ error: 'ocorreu um erro ao ler o status do pedido' })
   }
-  catch(error){
-    res.status(500).json({error: "ocorreu um erro ao ler o status do pedido"})
+}
+
+// GET
+export const getAllByUserAsync = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const pedidos = await getAllAsync(id)
+
+    if (!pedidos || pedidos.length === 0) {
+      return res
+        .status(404)
+        .json({ error: 'Nenhum pedido encontrado para este ID.' })
+    }
+
+    res.status(200).json(pedidos)
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao buscar pedidos' })
   }
 }

@@ -1,4 +1,7 @@
-import { verificaFornecedorAsync } from '../repositories/fornecedorRepositoy'
+import {
+  fornecedorByEmailAsync,
+  verificaFornecedorAsync,
+} from '../repositories/fornecedorRepositoy'
 import { prisma } from '../../database/prisma'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
@@ -53,7 +56,7 @@ export const createAsync = async data => {
 
   // Geração do token JWT com os dados do cliente
   const token = jwt.sign(
-    { id: fornecedor.id, email: fornecedor.email },
+    { id: fornecedor.id, email: fornecedor.email, tipoUsuario: 'fornecedor' },
     senha_jwt,
     {
       expiresIn: '1h',
@@ -64,9 +67,7 @@ export const createAsync = async data => {
 }
 
 export const verificaLoginAsync = async (email, senha) => {
-  const fornecedor = await prisma.fornecedor.findFirst({
-    where: { email },
-  })
+  const fornecedor = await fornecedorByEmailAsync(email)
 
   if (fornecedor == null) {
     throw new Error('Fornecedor não encontrado')
@@ -79,12 +80,31 @@ export const verificaLoginAsync = async (email, senha) => {
   }
 
   const token = jwt.sign(
-    { id: fornecedor.id, email: fornecedor.email },
+    { id: fornecedor.id, email: fornecedor.email, tipoUsuario: 'fornecedor' },
     senha_jwt,
     {
       expiresIn: '1h',
     }
   )
 
-  return { fornecedor, token }
+  return { token }
+}
+
+export const novaSenhaAsync = async (email, senha) => {
+  const fornecedor = await fornecedorByEmailAsync(email)
+
+  if (fornecedor == null) {
+    throw new Error('Fornecedor não encontrado')
+  }
+
+  const senhaCriptografada = await bcrypt.hash(senha, 10)
+
+  await prisma.fornecedor.update({
+    where: { id: fornecedor.id },
+    data: {
+      senha: senhaCriptografada,
+    },
+  })
+
+  return { message: 'Senha atualizada com sucesso' }
 }

@@ -1,6 +1,11 @@
 import { Router } from 'express'
 
-import { cadastroAsync, loginAsync } from '../api/controllers/clienteController'
+import {
+  cadastroAsync,
+  loginAsync,
+  redefinirSenhaAsync,
+} from '../api/controllers/clienteController'
+import verificarToken from '../middleware/auth'
 
 const clienteRouter = Router()
 
@@ -79,5 +84,31 @@ clienteRouter.post('/', cadastroAsync)
  *         description: Credenciais inválidas
  */
 clienteRouter.post('/login', loginAsync)
+/**
+ * @swagger
+ * /clientes/redefinir-senha:
+ *   put:
+ *     summary: Redefinir senha de cliente
+ *     tags: [Clientes]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "joao.pereira@example.com"
+ *               senha:
+ *                 type: string
+ *                 example: "novaSenha123"
+ *     responses:
+ *       200:
+ *         description: Senha redefinida com sucesso
+ *       400:
+ *         description: Erro ao redefinir a senha, como cliente não encontrado ou senha inválida
+ */
+clienteRouter.put('/redefinir-senha', redefinirSenhaAsync)
 
 export default clienteRouter

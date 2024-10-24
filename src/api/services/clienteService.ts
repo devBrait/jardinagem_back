@@ -1,4 +1,7 @@
-import { verificaClienteAsync } from '../repositories/clienteRepositoy'
+import {
+  clienteByEmailAsync,
+  verificaClienteAsync,
+} from '../repositories/clienteRepositoy'
 import { prisma } from '../../database/prisma'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
@@ -38,17 +41,19 @@ export const createAsync = async data => {
   })
 
   // Geração do token JWT com os dados do cliente
-  const token = jwt.sign({ id: cliente.id, email: cliente.email }, senha_jwt, {
-    expiresIn: '1h',
-  })
+  const token = jwt.sign(
+    { id: cliente.id, email: cliente.email, tipoUsuario: 'cliente' },
+    senha_jwt,
+    {
+      expiresIn: '1h',
+    }
+  )
 
   return { cliente, token }
 }
 
 export const verificaLoginAsync = async (email, senha) => {
-  const cliente = await prisma.cliente.findFirst({
-    where: { email },
-  })
+  const cliente = await clienteByEmailAsync(email)
 
   // Verificar se o cliente existe
   if (!cliente) {
@@ -63,9 +68,34 @@ export const verificaLoginAsync = async (email, senha) => {
   }
 
   // Geração do token JWT com os dados do cliente
-  const token = jwt.sign({ id: cliente.id, email: cliente.email }, senha_jwt, {
-    expiresIn: '1h',
+  const token = jwt.sign(
+    { id: cliente.id, email: cliente.email, tipoUsuario: 'cliente' },
+    senha_jwt,
+    {
+      expiresIn: '1h',
+    }
+  )
+
+  return { token }
+}
+
+export const senhaNovaAsync = async (email, senha) => {
+  const cliente = await clienteByEmailAsync(email)
+
+  if (cliente == null) {
+    throw new Error('Cliente não encontrado')
+  }
+
+  const senhaCriptografada = await bcrypt.hash(senha, 10)
+
+  await prisma.cliente.update({
+    where: { email },
+    data: {
+      senha: senhaCriptografada,
+    },
   })
 
-  return { cliente, token }
+  return {
+    message: 'Senha alterada com sucesso',
+  }
 }

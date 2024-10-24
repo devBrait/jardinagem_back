@@ -27,3 +27,15 @@ export const verificaFornecedorAsync = async (cnpj: number, email: string) => {
     throw new Error(`Erro ao verificar fornecedor: ${error.message}`)
   }
 }
+
+export const fornecedorByEmailAsync = async (email: string) => {
+  try {
+    const fornecedor = await prisma.fornecedor.findUnique({
+      where: { email: email },
+    })
+
+    return fornecedor
+  } catch (error) {
+    throw new Error(`Erro ao buscar fornecedor por email: ${error.message}`)
+  }
+}

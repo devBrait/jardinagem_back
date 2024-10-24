@@ -10,3 +10,17 @@ export const retornaPedido = async (id: number) => {
     throw new Error(`Erro: ID não existe ${error.message}}`)
   }
 }
+
+export const retornaPedidosAsync = async (id: number) => {
+  try {
+    const pedidos = await prisma.pedido.findMany({
+      where: {
+        idCliente: id,
+      },
+    })
+
+    return pedidos
+  } catch (error) {
+    throw new Error(`Erro: ${error.message}`)
+  }
+}
