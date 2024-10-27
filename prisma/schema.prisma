@@ -15,6 +15,7 @@ model Cliente {
   data_nascimento DateTime
   CEP String
   telefone BigInt
+  ativo Boolean
   senha String
   pedidos Pedido[]
 }
@@ -38,33 +39,52 @@ model Fornecedor {
   senha String
 }
 
-model Planta {
-  id Int @id @default(autoincrement())
-  fornecedor Fornecedor @relation(fields:[idFornecedor], references: [id])
-  idFornecedor Int
-  nome_social String
-  nome_cientifico String
-  variedade String
-  cor_floracao String
-  porte String
-  topiaria String
-  forma_tronco String
-  quant_ramos Int
-  dap Int
-  diametro_copa Float
-  altura_ramo Float
-  altura_total Float
-  peso_medio Float
-  volume Int
-  entouceirada Boolean
-  tutorada Boolean
-  embalagem String
-  diametro_base Float
+model Planta{
+  id                Int              @id @default(autoincrement())
+  fornecedor        Fornecedor       @relation(fields: [idFornecedor], references: [id])
+  idFornecedor      Int
+  nome_cientifico   Nome_Cientifico   @relation("NomeCientificoPlanta", fields: [idNomeCientifico], references: [id])
+  idNomeCientifico  Int               // Relação de muitos para um com Nome_Cientifico
+  nome_popular      Nome_Popular      @relation("NomePopularPlantas", fields: [idNomePopular], references: [id])
+  idNomePopular     Int               // Relação de muitos para um com Nome_Popular
+  variedade         String
+  cor_floracao      String
+  porte            String
+  topiaria         String
+  forma_tronco     String
+  quant_ramos      Int
+  dap              Int
+  diametro_copa    Float
+  altura_ramo      Float
+  altura_total     Float
+  peso_medio       Float
+  volume           Int
+  entouceirada     Boolean
+  tutorada         Boolean
+  embalagem        String
+  diametro_base    Float
   concatenar_diametro Boolean
-  obs String
-  ativo Boolean
-  pedidoItems PedidoItem[]
+  obs              String
+  quantidade       Int
+  ativo            Boolean
+  pedidoItems      PedidoItem[]
 }
+
+model Nome_Cientifico {
+  id                Int              @id @default(autoincrement())
+  nome              String           @unique
+  nomesPopulares    Nome_Popular[]   @relation("NomeCientificoPopulares")
+  plantas           Planta[]         @relation("NomeCientificoPlanta")
+}
+
+model Nome_Popular {
+  id                Int              @id @default(autoincrement())
+  nome              String
+  nomeCientifico    Nome_Cientifico   @relation("NomeCientificoPopulares", fields: [idNomeCientifico], references: [id])
+  idNomeCientifico  Int             
+  plantas           Planta[]         @relation("NomePopularPlantas")
+}
+
 
 model Pedido {
   id             Int         @id @default(autoincrement())
@@ -73,6 +93,8 @@ model Pedido {
   data_criacao   DateTime    @default(now())
   status         String
   valor_total    Float
+  CEP String
+  numero_endereco Int
   pedidoItems    PedidoItem[]
 }
 

@@ -1,0 +1,25 @@
+# Use uma imagem base do Node.js
+FROM node:16
+
+# Defina o diretório de trabalho
+WORKDIR /usr/src/app
+
+# Copie os arquivos de configuração do projeto
+COPY package*.json ./
+COPY tsconfig.json ./
+COPY swagger.json ./
+
+# Instale as dependências
+RUN npm install
+
+# Copie todo o restante do código da aplicação
+COPY . .
+
+# Compile o código TypeScript
+RUN npm run build
+
+# Exponha a porta que o aplicativo irá rodar
+EXPOSE 3000
+
+# Comando para rodar o aplicativo
+CMD ["npm", "start"]

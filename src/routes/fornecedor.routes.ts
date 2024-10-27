@@ -4,6 +4,8 @@ import {
   cadastroAsync,
   loginAsync,
 } from '../api/controllers/fornecedorController'
+import { redefinirSenhaAsync } from '../api/controllers/clienteController'
+import verificarToken from '../middleware/auth'
 
 const fornecedorRouter = Router()
 /**
@@ -76,7 +78,7 @@ const fornecedorRouter = Router()
  *                 example: true
  *               senha:
  *                 type: string
- *                 example: "1234"
+ *                 example: "123456"
  *                 description: Senha para acesso ao sistema
  *     responses:
  *       201:
@@ -123,7 +125,7 @@ fornecedorRouter.post('/', cadastroAsync)
  *                 example: "empresa@xyz.com"
  *               senha:
  *                 type: string
- *                 example: "1234"
+ *                 example: "123456"
  *     responses:
  *       200:
  *         description: Login bem-sucedido
@@ -131,5 +133,31 @@ fornecedorRouter.post('/', cadastroAsync)
  *         description: Credenciais inválidas
  */
 fornecedorRouter.post('/login', loginAsync)
+/**
+ * @swagger
+ * /fornecedores/redefinir-senha:
+ *   put:
+ *     summary: Redefinir senha de fornecedor
+ *     tags: [Fornecedores]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "empresa@xyz.com"
+ *               senha:
+ *                 type: string
+ *                 example: "novaSenha123"
+ *     responses:
+ *       200:
+ *         description: Senha redefinida com sucesso
+ *       400:
+ *         description: Erro ao redefinir a senha, como cliente não encontrado ou senha inválida
+ * */
+fornecedorRouter.put('/redefinir-senha', redefinirSenhaAsync)
 
 export default fornecedorRouter

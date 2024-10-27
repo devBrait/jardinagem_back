@@ -1,39 +1,169 @@
-import { createAsync, verificaLoginAsync } from '../services/clienteService'
+import {
+  alternaEstadoAsync,
+  createAsync,
+  getDadosByEmail,
+  novosDadosAsync,
+  senhaNovaAsync,
+  verificaLoginAsync,
+} from '../services/clienteService'
+import nodemailer from 'nodemailer'
 
-export const cadastroAsync = async (req, res) => {
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+})
+
+// GET - retorna dados do cliente
+export const getAllByEmail = async (req, res) => {
   try {
-    const { email, senha, nome, telefone, CPF } = req.body
-    const clienteData = {
-      email: email,
-      senha: senha,
-      nome: nome,
-      telefone: telefone,
-      CPF: CPF,
-    }
-    const cliente = await createAsync(clienteData)
+    const { email } = req.params
+    const cliente = await getDadosByEmail(email)
 
-    const clienteResponse = {
-      ...cliente,
-      CPF: Number(cliente.CPF), // Problema de bigInt com json
-      telefone: Number(cliente.telefone),
-    }
-
-    res.status(201).json(clienteResponse)
+    res.status(200).json({
+      success: true,
+      cliente,
+    })
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao cadastrar cliente' })
+    res.status(400).json({ success: false, error: error.message })
   }
 }
-export const loginAsync = async (req, res) => {
-  const { email, senha } = req.body
+
+// POST - cadastro de cliente
+export const cadastroAsync = async (req, res) => {
   try {
-    const loginSuccessful = await verificaLoginAsync(email, senha)
-    return res
-      .status(200)
-      .json({ success: true, message: 'Login realizado com sucesso' })
+    const { email, senha, nome, telefone, CPF, data_nascimento, CEP, ativo } =
+      req.body
+
+    // Chama o serviço para criar o cliente e gerar o token
+    const { cliente, token } = await createAsync({
+      email,
+      senha,
+      nome,
+      telefone,
+      CPF,
+      data_nascimento,
+      CEP,
+      ativo,
+    })
+
+    // Define o cookie com o token JWT
+    res.cookie('token', token, {
+      httpOnly: process.env.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      maxAge: 60 * 60 * 1000, // 1 hora
+    })
+
+    // Cria uma cópia do objeto cliente sem o campo 'senha' e converte os campos BigInt
+    const { senha: senhaOmitida, ...clienteSemSenha } = cliente
+
+    const response = {
+      ...clienteSemSenha,
+      CPF: Number(clienteSemSenha.CPF),
+      telefone: Number(clienteSemSenha.telefone),
+      tipoUsuario: 'cliente',
+    }
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Bem-vindo à nossa plataforma!',
+      text: `Olá ${nome},\n\nSua conta foi criada com sucesso!\n\nAtenciosamente,\nEquipe UmEntrePosto`,
+      html: `<p>Olá ${nome},</p><p>Sua conta foi criada com sucesso!</p><p>Atenciosamente,<br>UmEntrePosto</p>`,
+    })
+
+    res.status(201).json({ success: true, response })
   } catch (error) {
-    console.error(error.message)
-    return res
-      .status(500)
-      .json({ success: false, error: 'Erro ao realizar o login' })
+    console.log(error.message)
+    res.status(500).json({ success: false, error: 'Erro ao cadastrar cliente' })
+  }
+}
+
+// POST - login de cliente
+export const loginAsync = async (req, res) => {
+  try {
+    const { email, senha } = req.body
+    // Chama o serviço para verificar o login e gerar o token
+    const { token } = await verificaLoginAsync(email, senha)
+
+    // Define o cookie com o token JWT
+    res.cookie('token', token, {
+      httpOnly: process.env.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      maxAge: 60 * 60 * 1000, // 1 hora
+    })
+
+    res.status(200).json({ success: true, message: 'Login bem-sucedido' })
+  } catch (error) {
+    res.status(400).json({ sucess: false, error: error.message })
+  }
+}
+
+// PUT - redefinir senha
+export const redefinirSenhaAsync = async (req, res) => {
+  try {
+    const { email, senha } = req.body
+
+    await senhaNovaAsync(email, senha)
+
+    res.status(200).json({
+      success: true,
+      message: 'Senha redefinida com sucesso',
+    })
+  } catch (error) {
+    res.status(400).json({ sucess: false, error: error.message })
+  }
+}
+
+// PUT - atualizar dados do cliente
+export const atualizarDadosAsync = async (req, res) => {
+  try {
+    const { email, nome, telefone, CPF, data_nascimento, cep, ativo } = req.body
+
+    await novosDadosAsync({
+      email,
+      nome,
+      telefone,
+      CPF,
+      data_nascimento,
+      cep,
+      ativo,
+    })
+
+    res.status(200).json({
+      success: true,
+      message: 'Dados atualizados com sucesso',
+    })
+  } catch (error) {
+    res.status(400).json({ sucess: false, error: error.message })
+  }
+}
+// PUT - alterna estado da conta do cliente
+export const alternaEstadoContaAsync = async (req, res) => {
+  try {
+    const { email } = req.body
+
+    const ativo = await alternaEstadoAsync(email)
+
+    // Verifica se a conta foi ativada ou desativada
+    if (ativo) {
+      res.status(200).json({
+        success: true,
+        message: 'Conta ativada com sucesso',
+      })
+    } else {
+      res.status(200).json({
+        success: true,
+        message: 'Conta desativada com sucesso',
+      })
+    }
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message })
   }
 }
