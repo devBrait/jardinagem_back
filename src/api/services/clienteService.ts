@@ -15,9 +15,15 @@ export const getDadosByEmail = async email => {
     throw new Error('Cliente não encontrado')
   }
 
-  const { senha, ...clienteSemSenha } = cliente
+  const { senha, CPF, telefone, ...clienteSemSenha } = cliente
 
-  return clienteSemSenha
+  const clienteConvertido = {
+    ...clienteSemSenha,
+    cpf: Number(CPF),
+    telefone: Number(telefone),
+  }
+
+  return clienteConvertido
 }
 
 export const createAsync = async data => {
@@ -45,7 +51,7 @@ export const createAsync = async data => {
       CPF,
       email,
       data_nascimento: dataNascimento,
-      CEP: CEP == null ? '' : CEP,
+      CEP,
       telefone,
       ativo: ativo ?? true,
       senha: senhaCriptografada, // Usar a senha criptografada
@@ -113,7 +119,7 @@ export const senhaNovaAsync = async (email, senha) => {
 }
 
 export const novosDadosAsync = async dadosCliente => {
-  const { nome, CPF, email, data_nascimento, CEP, telefone, ativo } =
+  const { nome, CPF, email, data_nascimento, cep, telefone, ativo } =
     dadosCliente
 
   const cliente = await clienteByEmailAsync(email)
@@ -131,7 +137,7 @@ export const novosDadosAsync = async dadosCliente => {
       email,
       data_nascimento:
         data_nascimento == null ? new Date() : new Date(data_nascimento),
-      CEP: CEP == null ? '' : CEP,
+      CEP: cep,
       telefone,
       ativo: ativo ?? true,
     },

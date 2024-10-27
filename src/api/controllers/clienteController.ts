@@ -21,7 +21,7 @@ const transporter = nodemailer.createTransport({
 // GET - retorna dados do cliente
 export const getAllByEmail = async (req, res) => {
   try {
-    const { email } = req.body
+    const { email } = req.params
     const cliente = await getDadosByEmail(email)
 
     res.status(200).json({
@@ -29,7 +29,7 @@ export const getAllByEmail = async (req, res) => {
       cliente,
     })
   } catch (error) {
-    res.status(400).json({ sucess: false, error: error.message })
+    res.status(400).json({ success: false, error: error.message })
   }
 }
 
@@ -124,7 +124,7 @@ export const redefinirSenhaAsync = async (req, res) => {
 // PUT - atualizar dados do cliente
 export const atualizarDadosAsync = async (req, res) => {
   try {
-    const { email, nome, telefone, CPF, data_nascimento, CEP, ativo } = req.body
+    const { email, nome, telefone, CPF, data_nascimento, cep, ativo } = req.body
 
     await novosDadosAsync({
       email,
@@ -132,7 +132,7 @@ export const atualizarDadosAsync = async (req, res) => {
       telefone,
       CPF,
       data_nascimento,
-      CEP,
+      cep,
       ativo,
     })
 

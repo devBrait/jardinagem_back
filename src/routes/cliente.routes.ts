@@ -21,66 +21,61 @@ const clienteRouter = Router()
 /**
 /**
  * @swagger
- * /clientes:
+ * /clientes/{email}:
  *   get:
  *     summary: Obtém os dados do cliente pelo email
  *     tags: [Clientes]
  *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *                 description: O email do cliente a ser pesquisado
- *                 example: "joao.pereira@example.com"
+ *       - bearerAuth: [] 
+ *     parameters:
+ *       - name: email
+ *         in: path
+ *         required: true
+ *         description: O email do cliente a ser pesquisado
+ *         schema:
+ *           type: string
+ *           example: "joao.pereira@example.com"
  *     responses:
  *       200:
  *         description: Dados do cliente obtidos com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: integer
- *                     description: ID do cliente
- *                     example: 1
- *                   nome:
- *                     type: string
- *                     description: Nome do cliente
- *                     example: "João Pereira"
- *                   email:
- *                     type: string
- *                     description: Email do cliente
- *                     example: "joao.pereira@example.com"
- *                   CPF:
- *                     type: string
- *                     description: CPF do cliente
- *                     example: "11122233344"
- *                   data_nascimento:
- *                     type: string
- *                     format: date
- *                     description: Data de nascimento do cliente
- *                     example: "2005-04-22"
- *                   CEP:
- *                     type: string
- *                     description: CEP do cliente
- *                     example: "11111-100"
- *                   telefone:
- *                     type: string
- *                     description: Telefone do cliente
- *                     example: "11912340631"
- *                   ativo:
- *                     type: boolean
- *                     description: Indica se o cliente está ativo
- *                     example: true
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   description: ID do cliente
+ *                   example: 1
+ *                 nome:
+ *                   type: string
+ *                   description: Nome do cliente
+ *                   example: "João Pereira"
+ *                 email:
+ *                   type: string
+ *                   description: Email do cliente
+ *                   example: "joao.pereira@example.com"
+ *                 CPF:
+ *                   type: string
+ *                   description: CPF do cliente
+ *                   example: "11122233344"
+ *                 data_nascimento:
+ *                   type: string
+ *                   format: date
+ *                   description: Data de nascimento do cliente
+ *                   example: "2005-04-22"
+ *                 CEP:
+ *                   type: string
+ *                   description: CEP do cliente
+ *                   example: "11111-100"
+ *                 telefone:
+ *                   type: string
+ *                   description: Telefone do cliente
+ *                   example: "11912340631"
+ *                 ativo:
+ *                   type: boolean
+ *                   description: Indica se o cliente está ativo
+ *                   example: true
  *       401:
  *         description: Não autorizado
  *       404:
@@ -88,7 +83,7 @@ const clienteRouter = Router()
  *       500:
  *         description: Erro interno do servidor
  */
-clienteRouter.get('/', verificarToken, getAllByEmail)
+clienteRouter.get('/:email', verificarToken, getAllByEmail)
 /**
  * @swagger
  * /clientes:
@@ -237,7 +232,7 @@ clienteRouter.put('/redefinir-senha', redefinirSenhaAsync)
 clienteRouter.put('/atualizar-dados', verificarToken, atualizarDadosAsync)
 /**
  * @swagger
- * /alterna-estado:
+ * /clientes/alterna-estado:
  *   put:
  *     summary: Alterna o estado da conta do cliente (ativa ou desativa)
  *     tags: [Clientes]

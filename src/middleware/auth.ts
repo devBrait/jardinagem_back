@@ -9,7 +9,7 @@ const verificarToken = (req, res, next) => {
   }
 
   // Verifica se o token é válido
-  jwt.verify(token, process.env.SENHA_JWT, (err, decoded) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
       return res.status(403).json({ message: 'Token inválido' })
     }
