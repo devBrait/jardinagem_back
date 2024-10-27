@@ -8,6 +8,18 @@ import jwt from 'jsonwebtoken'
 
 const senha_jwt = process.env.JWT_SECRET
 
+export const getDadosByEmail = async email => {
+  const cliente = await clienteByEmailAsync(email)
+
+  if (!cliente) {
+    throw new Error('Cliente não encontrado')
+  }
+
+  const { senha, ...clienteSemSenha } = cliente
+
+  return clienteSemSenha
+}
+
 export const createAsync = async data => {
   const { nome, CPF, email, data_nascimento, CEP, telefone, ativo, senha } =
     data
@@ -98,4 +110,49 @@ export const senhaNovaAsync = async (email, senha) => {
   return {
     message: 'Senha alterada com sucesso',
   }
+}
+
+export const novosDadosAsync = async dadosCliente => {
+  const { nome, CPF, email, data_nascimento, CEP, telefone, ativo } =
+    dadosCliente
+
+  const cliente = await clienteByEmailAsync(email)
+
+  if (!cliente) {
+    throw new Error('Cliente não encontrado')
+  }
+
+  // Atualiza os dados do cliente
+  await prisma.cliente.update({
+    where: { email },
+    data: {
+      nome,
+      CPF,
+      email,
+      data_nascimento:
+        data_nascimento == null ? new Date() : new Date(data_nascimento),
+      CEP: CEP == null ? '' : CEP,
+      telefone,
+      ativo: ativo ?? true,
+    },
+  })
+
+  return true
+}
+
+export const alternaEstadoAsync = async email => {
+  const cliente = await clienteByEmailAsync(email)
+
+  if (!cliente) {
+    throw new Error('Cliente não encontrado')
+  }
+
+  const novoEstado = !cliente.ativo // Inverte o estado atual
+
+  await prisma.cliente.update({
+    where: { email: email },
+    data: { ativo: novoEstado },
+  })
+
+  return novoEstado
 }

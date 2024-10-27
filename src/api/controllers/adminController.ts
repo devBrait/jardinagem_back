@@ -10,9 +10,9 @@ export const loginAsync = async (req, res) => {
 
     // Define o cookie com o token JWT
     res.cookie('token', token, {
-      httpOnly: true,
+      httpOnly: process.env.NODE_ENV === 'production',
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
       maxAge: 60 * 60 * 1000, // 1 hora
     })
 

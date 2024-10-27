@@ -64,11 +64,104 @@ const pedidoRouter = Router()
  *   description: Operações relacionadas aos pedidos
  */
 /**
+/**
+ * @swagger
+ * /pedidos/{id}:
+ *   get:
+ *     summary: Obter status do pedido
+ *     tags: [Pedidos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *          type: integer
+ *         required: true
+ *         description: Obter status do pedido através do ID
+ *     responses:
+ *       201:
+ *         description: Status do pedido retornado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Status do pedido retornado com sucesso."
+ *                 status:
+ *                   type: string
+ *                   example: "Pendente"
+ *                   description: Status do pedido
+ *       400:
+ *         description: Requisição inválida
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Erro na requisição. ID do pedido inválidos."
+ */
+pedidoRouter.get('/:id', verificarToken, verificaStatus)
+/**
+ * @swagger
+ * /pedidos/getAll/{id}:
+ *   get:  # Método GET para buscar pedidos
+ *     summary: Obter pedidos do usuário
+ *     tags: [Pedidos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID do usuário para obter os pedidos
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *     responses:
+ *       200:
+ *         description: Lista de pedidos retornada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Pedido'  # Referência ao esquema Pedido
+ *       404:
+ *         description: Nenhum pedido encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Nenhum pedido encontrado para este ID."
+ *       500:
+ *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Erro ao buscar pedidos"
+ */
+
+pedidoRouter.get('/getAll', verificarToken, getAllByUserAsync)
+/**
  * @swagger
  * /pedido:
  *   post:
  *     summary: Cadastro de pedido
  *     tags: [Pedidos]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -135,92 +228,5 @@ const pedidoRouter = Router()
  *                   example: "Erro na requisição. Dados do pedido inválidos."
  */
 pedidoRouter.post('/pedido', verificarToken, cadastraPedido)
-
-/**
- * @swagger
- * /pedidos/{id}:
- *   get:
- *     summary: Obter status do pedido
- *     tags: [Pedidos]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *          type: integer
- *         required: true
- *         description: Obter status do pedido através do ID
- *     responses:
- *       201:
- *         description: Status do pedido retornado
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Status do pedido retornado com sucesso."
- *                 status:
- *                   type: string
- *                   example: "Pendente"
- *                   description: Status do pedido
- *       400:
- *         description: Requisição inválida
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Erro na requisição. ID do pedido inválidos."
- */
-pedidoRouter.get('/:id', verificarToken, verificaStatus)
-/**
- * @swagger
- * /pedidos/getAll/{id}:
- *   get:  # Método GET para buscar pedidos
- *     summary: Obter pedidos do usuário
- *     tags: [Pedidos]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: ID do usuário para obter os pedidos
- *         schema:
- *           type: integer
- *           example: 1
- *     responses:
- *       200:
- *         description: Lista de pedidos retornada com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Pedido'  # Referência ao esquema Pedido
- *       404:
- *         description: Nenhum pedido encontrado
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Nenhum pedido encontrado para este ID."
- *       500:
- *         description: Erro interno do servidor
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Erro ao buscar pedidos"
- */
-
-pedidoRouter.get('/getAll', verificarToken, getAllByUserAsync)
 
 export default pedidoRouter

@@ -5,6 +5,16 @@ import {
 } from '../services/fornecedorService'
 import nodemailer from 'nodemailer'
 
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+})
+
 // POST
 export const cadastroAsync = async (req, res) => {
   try {
@@ -23,9 +33,9 @@ export const cadastroAsync = async (req, res) => {
 
     // Define o cookie com o token JWT
     res.cookie('token', token, {
-      httpOnly: true,
+      httpOnly: process.env.NODE_ENV === 'production',
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
       maxAge: 60 * 60 * 1000, // 1 hora
     })
 
@@ -37,12 +47,13 @@ export const cadastroAsync = async (req, res) => {
       tipoUsuario: 'fornecedor',
     }
 
-    const mailOptions = {
+    await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: email,
-      subject: 'Bem-vindo ao nosso site!',
-      text: `Olá ${nome},\n\nObrigado por se cadastrar no nosso site! Estamos felizes em tê-lo conosco.\n\nAtenciosamente,\nEquipe UmEntrePosto`,
-    }
+      subject: 'Bem-vindo à nossa plataforma!',
+      text: `Olá ${nome},\n\nSua conta foi criada com sucesso!\n\nAtenciosamente,\nEquipe UmEntrePosto`,
+      html: `<p>Olá ${nome},</p><p>Sua conta foi criada com sucesso!</p><p>Atenciosamente,<br>UmEntrePosto</p>`,
+    })
 
     res.status(201).json({ success: true, response })
   } catch (error) {
@@ -60,9 +71,9 @@ export const loginAsync = async (req, res) => {
     const { token } = await verificaLoginAsync(email, senha)
 
     res.cookie('token', token, {
-      httpOnly: true,
+      httpOnly: process.env.NODE_ENV === 'production',
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
       maxAge: 60 * 60 * 1000, // 1 hora
     })
 

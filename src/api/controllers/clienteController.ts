@@ -1,11 +1,39 @@
 import {
+  alternaEstadoAsync,
   createAsync,
+  getDadosByEmail,
+  novosDadosAsync,
   senhaNovaAsync,
   verificaLoginAsync,
 } from '../services/clienteService'
 import nodemailer from 'nodemailer'
 
-// POST
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+})
+
+// GET - retorna dados do cliente
+export const getAllByEmail = async (req, res) => {
+  try {
+    const { email } = req.body
+    const cliente = await getDadosByEmail(email)
+
+    res.status(200).json({
+      success: true,
+      cliente,
+    })
+  } catch (error) {
+    res.status(400).json({ sucess: false, error: error.message })
+  }
+}
+
+// POST - cadastro de cliente
 export const cadastroAsync = async (req, res) => {
   try {
     const { email, senha, nome, telefone, CPF, data_nascimento, CEP, ativo } =
@@ -25,9 +53,9 @@ export const cadastroAsync = async (req, res) => {
 
     // Define o cookie com o token JWT
     res.cookie('token', token, {
-      httpOnly: true,
+      httpOnly: process.env.NODE_ENV === 'production',
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
       maxAge: 60 * 60 * 1000, // 1 hora
     })
 
@@ -36,18 +64,27 @@ export const cadastroAsync = async (req, res) => {
 
     const response = {
       ...clienteSemSenha,
-      CPF: Number(clienteSemSenha.CPF), // Converte BigInt para string
-      telefone: Number(clienteSemSenha.telefone), // Converte BigInt para string
+      CPF: Number(clienteSemSenha.CPF),
+      telefone: Number(clienteSemSenha.telefone),
       tipoUsuario: 'cliente',
     }
 
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Bem-vindo à nossa plataforma!',
+      text: `Olá ${nome},\n\nSua conta foi criada com sucesso!\n\nAtenciosamente,\nEquipe UmEntrePosto`,
+      html: `<p>Olá ${nome},</p><p>Sua conta foi criada com sucesso!</p><p>Atenciosamente,<br>UmEntrePosto</p>`,
+    })
+
     res.status(201).json({ success: true, response })
   } catch (error) {
+    console.log(error.message)
     res.status(500).json({ success: false, error: 'Erro ao cadastrar cliente' })
   }
 }
 
-// POST
+// POST - login de cliente
 export const loginAsync = async (req, res) => {
   try {
     const { email, senha } = req.body
@@ -56,9 +93,9 @@ export const loginAsync = async (req, res) => {
 
     // Define o cookie com o token JWT
     res.cookie('token', token, {
-      httpOnly: true,
+      httpOnly: process.env.NODE_ENV === 'production',
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
       maxAge: 60 * 60 * 1000, // 1 hora
     })
 
@@ -68,7 +105,7 @@ export const loginAsync = async (req, res) => {
   }
 }
 
-// PUT
+// PUT - redefinir senha
 export const redefinirSenhaAsync = async (req, res) => {
   try {
     const { email, senha } = req.body
@@ -81,5 +118,52 @@ export const redefinirSenhaAsync = async (req, res) => {
     })
   } catch (error) {
     res.status(400).json({ sucess: false, error: error.message })
+  }
+}
+
+// PUT - atualizar dados do cliente
+export const atualizarDadosAsync = async (req, res) => {
+  try {
+    const { email, nome, telefone, CPF, data_nascimento, CEP, ativo } = req.body
+
+    await novosDadosAsync({
+      email,
+      nome,
+      telefone,
+      CPF,
+      data_nascimento,
+      CEP,
+      ativo,
+    })
+
+    res.status(200).json({
+      success: true,
+      message: 'Dados atualizados com sucesso',
+    })
+  } catch (error) {
+    res.status(400).json({ sucess: false, error: error.message })
+  }
+}
+// PUT - alterna estado da conta do cliente
+export const alternaEstadoContaAsync = async (req, res) => {
+  try {
+    const { email } = req.body
+
+    const ativo = await alternaEstadoAsync(email)
+
+    // Verifica se a conta foi ativada ou desativada
+    if (ativo) {
+      res.status(200).json({
+        success: true,
+        message: 'Conta ativada com sucesso',
+      })
+    } else {
+      res.status(200).json({
+        success: true,
+        message: 'Conta desativada com sucesso',
+      })
+    }
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message })
   }
 }
