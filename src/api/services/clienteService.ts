@@ -87,7 +87,12 @@ export const verificaLoginAsync = async (email, senha) => {
 
   // Geração do token JWT com os dados do cliente
   const token = jwt.sign(
-    { id: cliente.id, email: cliente.email, tipoUsuario: 'cliente' },
+    {
+      id: cliente.id,
+      email: cliente.email,
+      tipoUsuario: 'cliente',
+      ativo: cliente.ativo,
+    },
     senha_jwt,
     {
       expiresIn: '1h',
