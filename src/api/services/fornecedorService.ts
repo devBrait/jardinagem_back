@@ -108,3 +108,51 @@ export const novaSenhaAsync = async (email, senha) => {
 
   return { message: 'Senha atualizada com sucesso' }
 }
+
+export const novosDadosAsync = async dadosFornecedor =>{
+  const {nome_empresa, CNPJ, email, data_nascimento, CEP, site_empresa, Instagram, nome_contato, telefone, ativo} = 
+    dadosFornecedor
+
+  const fornecedor = await fornecedorByEmailAsync(email)
+
+  if (!fornecedor) {
+    throw new Error('Fornecedor não encontrado') 
+  }
+
+  //Atualiza os dados do fornecedor
+  await prisma.fornecedor.update({
+    where: { email },
+    data: {
+      nome_empresa,
+      CNPJ,
+      email,
+      data_nascimento:
+        data_nascimento == null  ?  new Date() : new Date (data_nascimento),
+      CEP: CEP,
+      site_empresa,
+      Instagram,
+      nome_contato,
+      telefone,
+      ativo: ativo ?? true,
+    }
+  })
+
+  return true
+}
+
+export const alternaEstadoAsync = async email =>{
+  const fornecedor = await fornecedorByEmailAsync(email)
+
+  if (!fornecedor) {
+    throw new Error ('Fornecedor não encontrado')
+  }
+
+  const NovoEstado = !fornecedor.ativo //inverte o estado atual
+
+  await prisma.fornecedor.update({
+    where: {email: email },
+    data: { ativo: NovoEstado },
+  })
+
+  return NovoEstado
+}

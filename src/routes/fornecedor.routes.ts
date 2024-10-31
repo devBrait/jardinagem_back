@@ -1,6 +1,8 @@
 import { Router } from 'express'
 
 import {
+  alternaEstadoContaAsync,
+  atualizarDadosAsync,
   cadastroAsync,
   loginAsync,
 } from '../api/controllers/fornecedorController'
@@ -159,5 +161,127 @@ fornecedorRouter.post('/login', loginAsync)
  *         description: Erro ao redefinir a senha, como cliente não encontrado ou senha inválida
  * */
 fornecedorRouter.put('/redefinir-senha', redefinirSenhaAsync)
+
+/**
+ * @swagger
+ * /fornecedores/atualizar-dados:
+ *   put:
+ *     summary: Atualiza dados do fornecedor
+ *     tags: [Fornecedores]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nome_empresa:
+ *                 type: string
+ *                 description: Nome da empresa fornecedora
+ *                 example: "Empresa Exemplo Ltda"
+ *               CNPJ:
+ *                 type: string
+ *                 description: CNPJ da empresa fornecedora
+ *                 example: "12345678000199"
+ *               email:
+ *                 type: string
+ *                 description: Email de contato da empresa fornecedora
+ *                 example: "contato@empresaexemplo.com"
+ *               data_nascimento:
+ *                 type: string
+ *                 format: date
+ *                 description: Data de fundação da empresa fornecedora
+ *                 example: "2001-05-10"
+ *               CEP:
+ *                 type: string
+ *                 description: CEP da localização da empresa
+ *                 example: "11111-100"
+ *               site_empresa:
+ *                 type: string
+ *                 description: Site oficial da empresa fornecedora
+ *                 example: "https://www.empresaexemplo.com"
+ *               Instagram:
+ *                 type: string
+ *                 description: Perfil do Instagram da empresa fornecedora
+ *                 example: "@empresaexemplo"
+ *               nome_contato:
+ *                 type: string
+ *                 description: Nome da pessoa de contato na empresa fornecedora
+ *                 example: "Ana Souza"
+ *               telefone:
+ *                 type: string
+ *                 description: Telefone de contato da empresa fornecedora
+ *                 example: "11912340631"
+ *               ativo:
+ *                 type: boolean
+ *                 description: Status da conta do fornecedor
+ *                 example: true
+ *     responses:
+ *       200:
+ *         description: Dados do fornecedor atualizados com sucesso
+ *       400:
+ *         description: Requisição inválida
+ *       401:
+ *         description: Não autorizado
+ *       404:
+ *         description: Fornecedor não encontrado
+ *       500:
+ *         description: Erro interno do servidor
+ */
+
+fornecedorRouter.put('/atualizar-dados', verificarToken, atualizarDadosAsync)
+
+/**
+ * @swagger
+ * /fornecedores/alterna-estado:
+ *   put:
+ *     summary: Alterna o estado da conta do fornecedor (ativa ou desativa)
+ *     tags: [Fornecedores]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: O email do fornecedor cuja conta será ativada ou desativada
+ *                 example: "fornecedor.exemplo@empresa.com"
+ *     responses:
+ *       200:
+ *         description: Conta ativada ou desativada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Conta ativada com sucesso"
+ *       400:
+ *         description: Erro ao alternar o estado da conta
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Fornecedor não encontrado"
+ */
+
+fornecedorRouter.put('/alterna-estado', verificarToken, alternaEstadoContaAsync)
 
 export default fornecedorRouter

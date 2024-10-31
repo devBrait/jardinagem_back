@@ -1,3 +1,4 @@
+import { alternaEstadoAsync, novosDadosAsync } from 'api/services/clienteService'
 import {
   createAsync,
   novaSenhaAsync,
@@ -100,4 +101,55 @@ export const redefinirSenha = async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, error: 'Erro ao redefinir a senha' })
   }
+}
+
+//PUT - atualizar dados fornecedor
+export const atualizarDadosAsync = async (req, res) =>{
+  try{
+    const{nome_empresa, CNPJ, email, data_nascimento, CEP, site_empresa, Instagram, nome_contato, telefone, ativo} = req.body
+
+    await novosDadosAsync ({
+      nome_empresa,
+      CNPJ,
+      email,
+      data_nascimento,
+      CEP,
+      site_empresa,
+      Instagram,
+      nome_contato,
+      telefone,
+      ativo
+    })
+
+    res.status(200).json({
+      succes:true,
+      message: 'Dados alterados com sucesso.',
+    })
+  }catch (error) {
+    res.status(400).json({succes: false, error:error.message})
+  }
+}
+
+//PUT - altera estado da conta do fornecedor
+export const alternaEstadoContaAsync = async (req,res) =>{
+  try{
+    const {email} = req.body
+
+    const ativo = await alternaEstadoAsync (email)
+
+    //verifica se a conta esta ativa ou desativada
+    if(ativo) {
+      res.status(200).json({
+        succes: true,
+        message: 'conta ativada com sucesso.'
+      })
+    }else{
+      res.status(200).json({
+        succes: true,
+        message: 'Conta desativada com sucesso.'
+      })
+    }
+  }catch (error){
+    res.status(400).json({ succes: false, error: error.message})
+  }
 }
