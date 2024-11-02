@@ -1,4 +1,5 @@
 import { createAsync } from '../services/plantaService'
+import { getPlantasDisponiveis } from '../services/plantaService'
 
 // POST
 export const cadastroPlanta = async (req, res) => {
@@ -67,4 +68,27 @@ export const cadastroPlanta = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Ocorreu um erro ao cadastrar a planta' })
   }
+}
+
+export const getFornecedorPlantasDisponiveis = async (req, res) => {
+  try {
+    const id = req.params.id
+    const quantidade = req.params.quantidade
+
+    const plantasDisponiveis = await getPlantasDisponiveis(id, quantidade)
+
+    const response = 
+      plantasDisponiveis.map((planta) => {
+        fornecedor: planta.idFornecedor
+        quantidade: planta.quantidade
+    })
+
+    const responseJson = JSON.stringify(response)
+    
+    return res.status(201).json(responseJson)
+  }
+  catch (error) {
+    return res.status(500).json({ error: "Ocorreu um erro ao buscar as plantas." })
+  }
+  
 }

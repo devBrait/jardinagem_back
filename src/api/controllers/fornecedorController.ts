@@ -1,4 +1,4 @@
-import { alternaEstadoAsync, novosDadosAsync } from 'api/services/clienteService'
+import { alternaEstadoAsync, novosDadosAsync } from '../services/clienteService'
 import {
   createAsync,
   novaSenhaAsync,

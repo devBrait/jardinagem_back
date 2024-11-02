@@ -110,7 +110,7 @@ export const novaSenhaAsync = async (email, senha) => {
 }
 
 export const novosDadosAsync = async dadosFornecedor =>{
-  const {nome_empresa, CNPJ, email, data_nascimento, CEP, site_empresa, Instagram, nome_contato, telefone, ativo} = 
+  const {nome_fantasia, CNPJ, email, data_nascimento, CEP, site_empresa, Instagram, nome_contato, telefone, ativo} = 
     dadosFornecedor
 
   const fornecedor = await fornecedorByEmailAsync(email)
@@ -123,16 +123,14 @@ export const novosDadosAsync = async dadosFornecedor =>{
   await prisma.fornecedor.update({
     where: { email },
     data: {
-      nome_empresa,
+      nome_fantasia,
       CNPJ,
       email,
-      data_nascimento:
-        data_nascimento == null  ?  new Date() : new Date (data_nascimento),
       CEP: CEP,
-      site_empresa,
-      Instagram,
-      nome_contato,
-      telefone,
+      site: site_empresa,
+      instagram: Instagram,
+      ctt_1: nome_contato,
+      telefone_1: telefone,
       ativo: ativo ?? true,
     }
   })
