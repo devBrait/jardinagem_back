@@ -8,6 +8,25 @@ import jwt from 'jsonwebtoken'
 
 const senha_jwt = process.env.JWT_SECRET
 
+export const getDadosByEmail = async email => {
+  const fornecedor = await fornecedorByEmailAsync(email)
+
+  if (!fornecedor) {
+    throw new Error('Fornecedor não encontrado')
+  }
+
+  const { senha, CNPJ, telefone_1, telefone_2, ...fornecedorSemSenha } =
+    fornecedor
+
+  const fornecedorConvertido = {
+    ...fornecedorSemSenha,
+    CNPJ: Number(CNPJ),
+    telefone_1: Number(telefone_1),
+    telefone_2: Number(telefone_2),
+  }
+  return fornecedorConvertido
+}
+
 export const createAsync = async data => {
   const {
     CNPJ,
@@ -56,7 +75,12 @@ export const createAsync = async data => {
 
   // Geração do token JWT com os dados do cliente
   const token = jwt.sign(
-    { id: fornecedor.id, email: fornecedor.email, tipoUsuario: 'fornecedor' },
+    {
+      id: fornecedor.id,
+      email: fornecedor.email,
+      tipoUsuario: 'fornecedor',
+      ativo: ativo,
+    },
     senha_jwt,
     {
       expiresIn: '1h',
@@ -80,14 +104,19 @@ export const verificaLoginAsync = async (email, senha) => {
   }
 
   const token = jwt.sign(
-    { id: fornecedor.id, email: fornecedor.email, tipoUsuario: 'fornecedor' },
+    {
+      id: fornecedor.id,
+      email: fornecedor.email,
+      tipoUsuario: 'fornecedor',
+      ativo: fornecedor.ativo,
+    },
     senha_jwt,
     {
       expiresIn: '1h',
     }
   )
 
-  return { token }
+  return { token, ativo: fornecedor.ativo }
 }
 
 export const novaSenhaAsync = async (email, senha) => {
@@ -107,4 +136,65 @@ export const novaSenhaAsync = async (email, senha) => {
   })
 
   return { message: 'Senha atualizada com sucesso' }
+}
+
+export const novosDadosAsync = async dadosFornecedor => {
+  const {
+    nome_fantasia,
+    CNPJ,
+    email,
+    CEP,
+    site,
+    instagram,
+    ctt_1,
+    telefone_1,
+    ctt_2,
+    telefone_2,
+    obs,
+    razao_social,
+  } = dadosFornecedor
+
+  const fornecedor = await fornecedorByEmailAsync(email)
+
+  if (!fornecedor) {
+    throw new Error('Fornecedor não encontrado')
+  }
+
+  //Atualiza os dados do fornecedor
+  await prisma.fornecedor.update({
+    where: { email },
+    data: {
+      nome_fantasia,
+      CNPJ,
+      email,
+      CEP,
+      site,
+      instagram,
+      ctt_1,
+      telefone_1,
+      ctt_2,
+      telefone_2: telefone_2 === '' ? 0 : telefone_2,
+      obs,
+      razao_social,
+    },
+  })
+
+  return true
+}
+
+export const alternaEstadoAsync = async email => {
+  const fornecedor = await fornecedorByEmailAsync(email)
+
+  if (!fornecedor) {
+    throw new Error('Fornecedor não encontrado')
+  }
+
+  const NovoEstado = !fornecedor.ativo //inverte o estado atual
+
+  await prisma.fornecedor.update({
+    where: { email: email },
+    data: { ativo: NovoEstado },
+  })
+
+  return NovoEstado
 }

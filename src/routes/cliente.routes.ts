@@ -4,7 +4,7 @@ import {
   alternaEstadoContaAsync,
   atualizarDadosAsync,
   cadastroAsync,
-  getAllByEmail,
+  getAllByEmailAsync,
   loginAsync,
   redefinirSenhaAsync,
 } from '../api/controllers/clienteController'
@@ -83,7 +83,7 @@ const clienteRouter = Router()
  *       500:
  *         description: Erro interno do servidor
  */
-clienteRouter.get('/:email', verificarToken, getAllByEmail)
+clienteRouter.get('/:email', verificarToken, getAllByEmailAsync)
 /**
  * @swagger
  * /clientes:

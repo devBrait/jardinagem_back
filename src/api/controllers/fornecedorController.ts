@@ -1,6 +1,9 @@
 import {
+  alternaEstadoAsync,
   createAsync,
+  getDadosByEmail,
   novaSenhaAsync,
+  novosDadosAsync,
   verificaLoginAsync,
 } from '../services/fornecedorService'
 import nodemailer from 'nodemailer'
@@ -14,6 +17,20 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS,
   },
 })
+
+// GET - retorna dados do fornecedor
+export const getAllByEmailAsync = async (req, res) => {
+  try {
+    const { email } = req.params
+    const fornecedor = await getDadosByEmail(email)
+    res.status(200).json({
+      success: true,
+      fornecedor,
+    })
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message })
+  }
+}
 
 // POST
 export const cadastroAsync = async (req, res) => {
@@ -68,7 +85,7 @@ export const loginAsync = async (req, res) => {
   try {
     const { email, senha } = req.body
 
-    const { token } = await verificaLoginAsync(email, senha)
+    const { token, ativo } = await verificaLoginAsync(email, senha)
 
     res.cookie('token', token, {
       httpOnly: process.env.NODE_ENV === 'production',
@@ -80,6 +97,7 @@ export const loginAsync = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'Login realizado com sucesso',
+      ativo,
     })
   } catch (error) {
     res.status(500).json({ success: false, error: 'Erro ao realizar o login' })
@@ -87,7 +105,7 @@ export const loginAsync = async (req, res) => {
 }
 
 // PUT
-export const redefinirSenha = async (req, res) => {
+export const redefinirSenhaAsync = async (req, res) => {
   try {
     const { email, senha } = req.body
 
@@ -99,5 +117,71 @@ export const redefinirSenha = async (req, res) => {
     })
   } catch (error) {
     res.status(500).json({ success: false, error: 'Erro ao redefinir a senha' })
+  }
+}
+
+//PUT - atualizar dados fornecedor
+export const atualizarDadosAsync = async (req, res) => {
+  try {
+    const {
+      nome_fantasia,
+      CNPJ,
+      email,
+      CEP,
+      site,
+      instagram,
+      ctt_1,
+      telefone_1,
+      ctt_2,
+      telefone_2,
+      obs,
+      razao_social,
+    } = req.body
+
+    await novosDadosAsync({
+      nome_fantasia,
+      CNPJ,
+      email,
+      CEP,
+      site,
+      instagram,
+      ctt_1,
+      telefone_1,
+      ctt_2,
+      telefone_2,
+      obs,
+      razao_social,
+    })
+
+    res.status(200).json({
+      success: true,
+      message: 'Dados alterados com sucesso.',
+    })
+  } catch (error) {
+    res.status(400).json({ succes: false, error: error.message })
+  }
+}
+
+//PUT - altera estado da conta do fornecedor
+export const alternaEstadoContaAsync = async (req, res) => {
+  try {
+    const { email } = req.body
+
+    const ativo = await alternaEstadoAsync(email)
+
+    //verifica se a conta esta ativa ou desativada
+    if (ativo) {
+      res.status(200).json({
+        succes: true,
+        message: 'conta ativada com sucesso.',
+      })
+    } else {
+      res.status(200).json({
+        succes: true,
+        message: 'Conta desativada com sucesso.',
+      })
+    }
+  } catch (error) {
+    res.status(400).json({ succes: false, error: error.message })
   }
 }

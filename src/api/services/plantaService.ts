@@ -1,4 +1,6 @@
+import { error } from 'console'
 import { prisma } from '../../database/prisma'
+import { getAllPlantaById } from '../repositories/plantaRepository'
 
 export const createAsync = async data => {
   const {
@@ -59,3 +61,24 @@ export const createAsync = async data => {
     },
   })
 }
+
+export const getPlantasDisponiveis =  async (id: number, quantidade: number) => {
+  
+  try {
+    const plantas = await getAllPlantaById(id)
+
+    const plantasDisponiveis = plantas.filter((planta) => {
+      planta.quantidade >= quantidade
+    })
+
+    if (plantasDisponiveis.length === 0) {
+      throw new Error(`Não há plantas disponíveis para essa quantidade.`)
+    }
+
+    return plantasDisponiveis
+  }
+  catch (error){
+    throw error
+  }
+}
+
