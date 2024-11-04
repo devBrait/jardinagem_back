@@ -19,7 +19,7 @@ const transporter = nodemailer.createTransport({
 })
 
 // GET - retorna dados do cliente
-export const getAllByEmail = async (req, res) => {
+export const getAllByEmailAsync = async (req, res) => {
   try {
     const { email } = req.params
     const cliente = await getDadosByEmail(email)
@@ -89,7 +89,7 @@ export const loginAsync = async (req, res) => {
   try {
     const { email, senha } = req.body
     // Chama o serviço para verificar o login e gerar o token
-    const { token } = await verificaLoginAsync(email, senha)
+    const { token, ativo } = await verificaLoginAsync(email, senha)
 
     // Define o cookie com o token JWT
     res.cookie('token', token, {
@@ -99,7 +99,9 @@ export const loginAsync = async (req, res) => {
       maxAge: 60 * 60 * 1000, // 1 hora
     })
 
-    res.status(200).json({ success: true, message: 'Login bem-sucedido' })
+    res
+      .status(200)
+      .json({ success: true, message: 'Login bem-sucedido', ativo })
   } catch (error) {
     res.status(400).json({ sucess: false, error: error.message })
   }

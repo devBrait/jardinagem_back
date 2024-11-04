@@ -4,9 +4,10 @@ import {
   alternaEstadoContaAsync,
   atualizarDadosAsync,
   cadastroAsync,
+  getAllByEmailAsync,
   loginAsync,
+  redefinirSenhaAsync,
 } from '../api/controllers/fornecedorController'
-import { redefinirSenhaAsync } from '../api/controllers/clienteController'
 import verificarToken from '../middleware/auth'
 
 const fornecedorRouter = Router()
@@ -16,6 +17,103 @@ const fornecedorRouter = Router()
  *   name: Fornecedores
  *   description: Operações relacionadas aos fornecedores
  */
+/**
+ * @swagger
+ * /fornecedor/{email}:
+ *   get:
+ *     summary: Obtém os dados do fornecedor pelo email
+ *     tags: [Fornecedores]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: email
+ *         in: path
+ *         required: true
+ *         description: O email do fornecedor a ser pesquisado
+ *         schema:
+ *           type: string
+ *           example: "fornecedor@example.com"
+ *     responses:
+ *       200:
+ *         description: Dados do fornecedor obtidos com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   description: ID do fornecedor
+ *                   example: 1
+ *                 CNPJ:
+ *                   type: integer
+ *                   format: int64
+ *                   description: CNPJ do fornecedor
+ *                   example: 12345678000199
+ *                 nome_fantasia:
+ *                   type: string
+ *                   description: Nome fantasia do fornecedor
+ *                   example: "Empresa XYZ"
+ *                 razao_social:
+ *                   type: string
+ *                   description: Razão social do fornecedor
+ *                   example: "Empresa XYZ LTDA"
+ *                 ctt_1:
+ *                   type: string
+ *                   description: Nome do primeiro contato
+ *                   example: "João Silva"
+ *                 telefone_1:
+ *                   type: integer
+ *                   format: int64
+ *                   description: Telefone do primeiro contato
+ *                   example: 11999887766
+ *                 ctt_2:
+ *                   type: string
+ *                   description: Nome do segundo contato
+ *                   example: "Maria Santos"
+ *                 telefone_2:
+ *                   type: integer
+ *                   format: int64
+ *                   description: Telefone do segundo contato
+ *                   example: 11999887755
+ *                 email:
+ *                   type: string
+ *                   description: Email do fornecedor
+ *                   example: "fornecedor@example.com"
+ *                 site:
+ *                   type: string
+ *                   description: Site do fornecedor
+ *                   example: "www.empresaxyz.com.br"
+ *                 instagram:
+ *                   type: string
+ *                   description: Instagram do fornecedor
+ *                   example: "@empresaxyz"
+ *                 CEP:
+ *                   type: string
+ *                   description: CEP do fornecedor
+ *                   example: "12345-678"
+ *                 obs:
+ *                   type: string
+ *                   description: Observações sobre o fornecedor
+ *                   example: "Fornecedor principal de materiais"
+ *                 ativo:
+ *                   type: boolean
+ *                   description: Indica se o fornecedor está ativo
+ *                   example: true
+ *                 plantas:
+ *                   type: array
+ *                   description: Lista de plantas associadas ao fornecedor
+ *                   items:
+ *                     type: object
+ *                     description: Dados da planta
+ *       401:
+ *         description: Não autorizado
+ *       404:
+ *         description: Fornecedor não encontrado
+ *       500:
+ *         description: Erro interno do servidor
+ */
+fornecedorRouter.get('/:email', verificarToken, getAllByEmailAsync)
 /**
  * @swagger
  * /fornecedores:

@@ -60,7 +60,12 @@ export const createAsync = async data => {
 
   // Geração do token JWT com os dados do cliente
   const token = jwt.sign(
-    { id: cliente.id, email: cliente.email, tipoUsuario: 'cliente' },
+    {
+      id: cliente.id,
+      email: cliente.email,
+      tipoUsuario: 'cliente',
+      ativo: ativo,
+    },
     senha_jwt,
     {
       expiresIn: '1h',
@@ -99,7 +104,7 @@ export const verificaLoginAsync = async (email, senha) => {
     }
   )
 
-  return { token }
+  return { token, ativo: cliente.ativo }
 }
 
 export const senhaNovaAsync = async (email, senha) => {
