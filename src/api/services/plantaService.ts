@@ -62,7 +62,7 @@ export const createAsync = async data => {
   })
 }
 
-export const getPlantasDisponiveis =  async (id: number, quantidade: number) => {
+export const getPlantasDisponiveisService =  async (id: number, quantidade: number) => {
   
   try {
     const plantas = await getAllPlantaById(id)
