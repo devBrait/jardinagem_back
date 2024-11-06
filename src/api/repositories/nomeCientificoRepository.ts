@@ -31,3 +31,31 @@ export const getAllAsync = async (page = 1, limit = 10, search = '') => {
     throw new Error(`Erro no repositório: ${error.message}`)
   }
 }
+
+export const getCientificoAndPopularAsync = async (
+  skip: number,
+  limit: number
+) => {
+  try {
+    const [lstNomes, total] = await Promise.all([
+      prisma.nome_Cientifico.findMany({
+        skip,
+        take: limit,
+        orderBy: {
+          nome: 'asc',
+        },
+        include: {
+          nomesPopulares: true,
+        },
+      }),
+      prisma.nome_Cientifico.count(),
+    ])
+
+    return {
+      lstNomes,
+      total,
+    }
+  } catch (error) {
+    throw new Error(`Erro no repositório: ${error.message}`)
+  }
+}

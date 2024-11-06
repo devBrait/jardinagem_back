@@ -4,7 +4,8 @@ import {
   alternaEstadoContaAsync,
   atualizarDadosAsync,
   cadastroAsync,
-  getAllByEmailAsync,
+  getAllAsync,
+  getByEmailAsync,
   loginAsync,
   redefinirSenhaAsync,
 } from '../api/controllers/fornecedorController'
@@ -113,7 +114,138 @@ const fornecedorRouter = Router()
  *       500:
  *         description: Erro interno do servidor
  */
-fornecedorRouter.get('/:email', verificarToken, getAllByEmailAsync)
+fornecedorRouter.get('/:email', verificarToken, getByEmailAsync)
+/**
+ * @swagger
+ * /fornecedores:
+ *   get:
+ *     summary: Obtém todos os fornecedores com paginação
+ *     tags: [Fornecedores]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: page
+ *         in: query
+ *         description: Número da página a ser retornada (padrão é 1)
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *       - name: limit
+ *         in: query
+ *         description: Número de fornecedores por página (padrão é 10)
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *     responses:
+ *       200:
+ *         description: Lista de fornecedores obtida com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: Status da resposta
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         description: ID do fornecedor
+ *                         example: 1
+ *                       CNPJ:
+ *                         type: integer
+ *                         format: int64
+ *                         description: CNPJ do fornecedor
+ *                         example: 12345678000199
+ *                       nome_fantasia:
+ *                         type: string
+ *                         description: Nome fantasia do fornecedor
+ *                         example: "Empresa XYZ"
+ *                       razao_social:
+ *                         type: string
+ *                         description: Razão social do fornecedor
+ *                         example: "Empresa XYZ LTDA"
+ *                       ctt_1:
+ *                         type: string
+ *                         description: Nome do primeiro contato
+ *                         example: "João Silva"
+ *                       telefone_1:
+ *                         type: integer
+ *                         format: int64
+ *                         description: Telefone do primeiro contato
+ *                         example: 11999887766
+ *                       ctt_2:
+ *                         type: string
+ *                         description: Nome do segundo contato
+ *                         example: "Maria Santos"
+ *                       telefone_2:
+ *                         type: integer
+ *                         format: int64
+ *                         description: Telefone do segundo contato
+ *                         example: 11999887755
+ *                       email:
+ *                         type: string
+ *                         description: Email do fornecedor
+ *                         example: "fornecedor@example.com"
+ *                       site:
+ *                         type: string
+ *                         description: Site do fornecedor
+ *                         example: "www.empresaxyz.com.br"
+ *                       instagram:
+ *                         type: string
+ *                         description: Instagram do fornecedor
+ *                         example: "@empresaxyz"
+ *                       CEP:
+ *                         type: string
+ *                         description: CEP do fornecedor
+ *                         example: "12345-678"
+ *                       ativo:
+ *                         type: boolean
+ *                         description: Indica se o fornecedor está ativo
+ *                         example: true
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     total:
+ *                       type: integer
+ *                       description: Total de fornecedores
+ *                       example: 50
+ *                     totalPages:
+ *                       type: integer
+ *                       description: Total de páginas disponíveis
+ *                       example: 5
+ *                     currentPage:
+ *                       type: integer
+ *                       description: Página atual
+ *                       example: 1
+ *                     itemsPerPage:
+ *                       type: integer
+ *                       description: Quantidade de itens por página
+ *                       example: 10
+ *                     hasNext:
+ *                       type: boolean
+ *                       description: Indica se há uma próxima página
+ *                       example: true
+ *                     hasPrevious:
+ *                       type: boolean
+ *                       description: Indica se há uma página anterior
+ *                       example: false
+ *       400:
+ *         description: Erro na requisição
+ *       401:
+ *         description: Não autorizado
+ *       500:
+ *         description: Erro interno do servidor
+ */
+fornecedorRouter.get('/', verificarToken, getAllAsync)
+
 /**
  * @swagger
  * /fornecedores:

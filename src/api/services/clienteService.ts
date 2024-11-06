@@ -1,15 +1,12 @@
-import {
-  clienteByEmailAsync,
-  verificaClienteAsync,
-} from '../repositories/clienteRepositoy'
+import * as clienteRepository from '../repositories/clienteRepositoy'
 import { prisma } from '../../database/prisma'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
 const senha_jwt = process.env.JWT_SECRET
 
-export const getDadosByEmail = async email => {
-  const cliente = await clienteByEmailAsync(email)
+export const getAllByEmailAsync = async email => {
+  const cliente = await clienteRepository.getByEmailAsync(email)
 
   if (!cliente) {
     throw new Error('Cliente não encontrado')
@@ -26,7 +23,22 @@ export const getDadosByEmail = async email => {
   return clienteConvertido
 }
 
-export const createAsync = async data => {
+export const getAllAsync = async (limit, offset) => {
+  const { clientes, total } = await clienteRepository.getAllAsync(limit, offset)
+
+  const clientesConvertidos = clientes.map(cliente => {
+    const { senha, CPF, telefone, ...clienteSemSenha } = cliente
+    return {
+      ...clienteSemSenha,
+      cpf: Number(CPF),
+      telefone: Number(telefone),
+    }
+  })
+
+  return { clientesConvertidos, total }
+}
+
+export const cadastroAsync = async data => {
   const { nome, CPF, email, data_nascimento, CEP, telefone, ativo, senha } =
     data
 
@@ -37,7 +49,10 @@ export const createAsync = async data => {
     data_nascimento == null ? new Date() : new Date(data_nascimento)
 
   // Verifica se o cliente já existe pelo CPF ou email
-  const verificaCliente = await verificaClienteAsync(CPF, email)
+  const verificaCliente = await clienteRepository.verificaClienteAsync(
+    CPF,
+    email
+  )
 
   // Tratamento de erro: CPF ou Email já cadastrados
   if (verificaCliente != null) {
@@ -75,8 +90,8 @@ export const createAsync = async data => {
   return { cliente, token }
 }
 
-export const verificaLoginAsync = async (email, senha) => {
-  const cliente = await clienteByEmailAsync(email)
+export const loginAsync = async (email, senha) => {
+  const cliente = await clienteRepository.getByEmailAsync(email)
 
   // Verificar se o cliente existe
   if (!cliente) {
@@ -107,8 +122,8 @@ export const verificaLoginAsync = async (email, senha) => {
   return { token, ativo: cliente.ativo }
 }
 
-export const senhaNovaAsync = async (email, senha) => {
-  const cliente = await clienteByEmailAsync(email)
+export const redefinirSenhaAsync = async (email, senha) => {
+  const cliente = await clienteRepository.getByEmailAsync(email)
 
   if (cliente == null) {
     throw new Error('Cliente não encontrado')
@@ -128,11 +143,11 @@ export const senhaNovaAsync = async (email, senha) => {
   }
 }
 
-export const novosDadosAsync = async dadosCliente => {
+export const atualizarDadosAsync = async dadosCliente => {
   const { nome, CPF, email, data_nascimento, cep, telefone, ativo } =
     dadosCliente
 
-  const cliente = await clienteByEmailAsync(email)
+  const cliente = await clienteRepository.getByEmailAsync(email)
 
   if (!cliente) {
     throw new Error('Cliente não encontrado')
@@ -156,8 +171,8 @@ export const novosDadosAsync = async dadosCliente => {
   return true
 }
 
-export const alternaEstadoAsync = async email => {
-  const cliente = await clienteByEmailAsync(email)
+export const alternaEstadoContaAsync = async email => {
+  const cliente = await clienteRepository.getByEmailAsync(email)
 
   if (!cliente) {
     throw new Error('Cliente não encontrado')

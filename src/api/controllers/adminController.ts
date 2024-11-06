@@ -1,4 +1,4 @@
-import { verificaAdminAsync } from '../services/adminService'
+import * as adminService from '../services/adminService'
 
 // POST
 export const loginAsync = async (req, res) => {
@@ -6,7 +6,7 @@ export const loginAsync = async (req, res) => {
     const { email, senha } = req.body
 
     // Chama o serviço para verificar o login e gerar o token
-    const { token } = await verificaAdminAsync(email, senha)
+    const { token } = await adminService.loginAsync(email, senha)
 
     // Define o cookie com o token JWT
     res.cookie('token', token, {

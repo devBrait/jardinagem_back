@@ -1,15 +1,12 @@
-import {
-  fornecedorByEmailAsync,
-  verificaFornecedorAsync,
-} from '../repositories/fornecedorRepositoy'
+import * as fornecedorRepository from '../repositories/fornecedorRepositoy'
 import { prisma } from '../../database/prisma'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
 const senha_jwt = process.env.JWT_SECRET
 
-export const getDadosByEmail = async email => {
-  const fornecedor = await fornecedorByEmailAsync(email)
+export const getByEmailAsync = async email => {
+  const fornecedor = await fornecedorRepository.getByEmailAsync(email)
 
   if (!fornecedor) {
     throw new Error('Fornecedor não encontrado')
@@ -27,7 +24,27 @@ export const getDadosByEmail = async email => {
   return fornecedorConvertido
 }
 
-export const createAsync = async data => {
+export const getAllAsync = async (limit, offset) => {
+  const { fornecedores, total } = await fornecedorRepository.getAllAsync(
+    limit,
+    offset
+  )
+
+  const fornecedoresConvertidos = fornecedores.map(fornecedor => {
+    const { senha, CNPJ, telefone_1, telefone_2, ...fornecedorSemSenha } =
+      fornecedor
+    return {
+      ...fornecedorSemSenha,
+      cnpj: Number(CNPJ),
+      telefone_1: Number(telefone_1),
+      telefone_2: Number(telefone_2),
+    }
+  })
+
+  return { fornecedoresConvertidos, total }
+}
+
+export const cadastroAsync = async data => {
   const {
     CNPJ,
     nome,
@@ -47,7 +64,10 @@ export const createAsync = async data => {
 
   const senhaCriptografada = await bcrypt.hash(senha, 10)
 
-  const verificaFornecedor = await verificaFornecedorAsync(CNPJ, email)
+  const verificaFornecedor = await fornecedorRepository.verificaFornecedorAsync(
+    CNPJ,
+    email
+  )
 
   // Tratamento de erro: CNPJ ou Email já cadastrados
   if (verificaFornecedor != null) {
@@ -90,8 +110,8 @@ export const createAsync = async data => {
   return { fornecedor, token }
 }
 
-export const verificaLoginAsync = async (email, senha) => {
-  const fornecedor = await fornecedorByEmailAsync(email)
+export const loginAsync = async (email, senha) => {
+  const fornecedor = await fornecedorRepository.getByEmailAsync(email)
 
   if (fornecedor == null) {
     throw new Error('Fornecedor não encontrado')
@@ -119,8 +139,8 @@ export const verificaLoginAsync = async (email, senha) => {
   return { token, ativo: fornecedor.ativo }
 }
 
-export const novaSenhaAsync = async (email, senha) => {
-  const fornecedor = await fornecedorByEmailAsync(email)
+export const redefinirSenhaAsync = async (email, senha) => {
+  const fornecedor = await fornecedorRepository.getByEmailAsync(email)
 
   if (fornecedor == null) {
     throw new Error('Fornecedor não encontrado')
@@ -138,7 +158,7 @@ export const novaSenhaAsync = async (email, senha) => {
   return { message: 'Senha atualizada com sucesso' }
 }
 
-export const novosDadosAsync = async dadosFornecedor => {
+export const atualizarDadosAsync = async dadosFornecedor => {
   const {
     nome_fantasia,
     CNPJ,
@@ -154,7 +174,7 @@ export const novosDadosAsync = async dadosFornecedor => {
     razao_social,
   } = dadosFornecedor
 
-  const fornecedor = await fornecedorByEmailAsync(email)
+  const fornecedor = await fornecedorRepository.getByEmailAsync(email)
 
   if (!fornecedor) {
     throw new Error('Fornecedor não encontrado')
@@ -182,8 +202,8 @@ export const novosDadosAsync = async dadosFornecedor => {
   return true
 }
 
-export const alternaEstadoAsync = async email => {
-  const fornecedor = await fornecedorByEmailAsync(email)
+export const alternaEstadoContaAsync = async email => {
+  const fornecedor = await fornecedorRepository.getByEmailAsync(email)
 
   if (!fornecedor) {
     throw new Error('Fornecedor não encontrado')

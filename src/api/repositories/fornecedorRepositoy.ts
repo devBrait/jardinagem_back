@@ -28,7 +28,7 @@ export const verificaFornecedorAsync = async (cnpj: number, email: string) => {
   }
 }
 
-export const fornecedorByEmailAsync = async (email: string) => {
+export const getByEmailAsync = async (email: string) => {
   try {
     const fornecedor = await prisma.fornecedor.findUnique({
       where: { email: email },
@@ -37,5 +37,23 @@ export const fornecedorByEmailAsync = async (email: string) => {
     return fornecedor
   } catch (error) {
     throw new Error(`Erro ao buscar fornecedor por email: ${error.message}`)
+  }
+}
+
+export const getAllAsync = async (limit, offset) => {
+  try {
+    const [fornecedores, total] = await prisma.$transaction([
+      prisma.fornecedor.findMany({
+        skip: offset,
+        take: limit,
+      }),
+      prisma.fornecedor.count(),
+    ])
+
+    return { fornecedores, total }
+  } catch (error) {
+    throw new Error(
+      `Erro ao buscar fornecedores com contagem total: ${error.message}`
+    )
   }
 }
