@@ -1,5 +1,6 @@
 import { createAsync } from '../services/plantaService'
 import { getPlantasDisponiveisService } from '../services/plantaService'
+import * as plantaService from '../services/plantaService'
 
 // POST
 export const cadastroPlanta = async (req, res) => {
@@ -87,7 +88,7 @@ export const getFornecedorPlantasDisponiveis = async (req, res) => {
     
     return res.status(201).json({
       sucess: true,
-      message: responseJson
+      data: responseJson
     })
   }
   catch (error) {
@@ -97,5 +98,54 @@ export const getFornecedorPlantasDisponiveis = async (req, res) => {
       message: error.message
     })
   }
+}
+
+export const getPlantaByFornecedorIdController = async (req, res) => {
   
+  try {
+
+    const id = req.params
+    const plantasFornecedor = plantaService.getPlantasByFornecedorIdService(id);
+
+    const response = (await plantasFornecedor).map((planta) => {
+      id: planta.id
+      idFornecedor: planta.idFornecedor
+      idNomeCientifico: planta.idNomeCientifico
+      idNomePopular: planta.idNomePopular
+      variedade: planta.variedade
+      cor_floracao: planta.cor_floracao
+      porte: planta.porte
+      topiaria: planta.topiaria
+      forma_tronco: planta.forma_tronco
+      quant_ramos: planta.quant_ramos
+      dap: planta.dap
+      diametro_copa: planta.diametro_copa
+      altura_total: planta.altura_total
+      peso_medio: planta.peso_medio
+      volume: planta.volume
+      entouceirada: planta.entouceirada
+      tutorada: planta.tutorada
+      embalagem: planta.embalagem
+      diametro_base: planta.diametro_base
+      concatenar_diametro: planta.concatenar_diametro
+      obs: planta.obs
+      quantidade: planta.quantidade
+      ativo: planta.ativo
+    })
+    
+    
+
+    return res.status(200).json({
+      success: true,
+      data: response
+    })
+  }
+  catch(error){
+    return res.status(404).json({
+      success: false,
+      error: "Plantas não encontradas",
+      message: error.message
+    })
+  }
+
 }
