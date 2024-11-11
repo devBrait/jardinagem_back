@@ -1,6 +1,7 @@
 import {
   AddAsync,
   getAllAsync,
+  getCientificoAndPopularAsync,
 } from '../api/controllers/nomeCientificoController'
 import { Router } from 'express'
 import verificarToken from './../middleware/auth'
@@ -135,6 +136,74 @@ const nomeCientificoRouter = Router()
  *                   example: "Erro interno do servidor"
  */
 nomeCientificoRouter.get('/', verificarToken, getAllAsync)
+/**
+ * @swagger
+ * /nomes-cientificos/cientifico-com-popular:
+ *   get:
+ *     summary: Obtém os nomes científicos junto com seus respectivos nomes populares
+ *     description: Retorna uma lista de nomes científicos com os nomes populares associados. Requer autenticação.
+ *     tags: [Nomes Científicos]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de nomes científicos com os respectivos nomes populares
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                     example: 1
+ *                   nomeCientifico:
+ *                     type: string
+ *                     example: "Rosa"
+ *                   nomesPopulares:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                           example: 1
+ *                         nomePopular:
+ *                           type: string
+ *                           example: "Rosa"
+ *       401:
+ *         description: Não autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Token não fornecido ou inválido"
+ *       500:
+ *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Erro interno do servidor"
+ */
+nomeCientificoRouter.get(
+  '/cientifico-com-popular',
+  verificarToken,
+  getCientificoAndPopularAsync
+)
 /**
  * @swagger
  * /nomes-cientificos:

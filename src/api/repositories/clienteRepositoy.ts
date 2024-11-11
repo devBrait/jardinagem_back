@@ -28,7 +28,7 @@ export const verificaClienteAsync = async (cpf: number, email: string) => {
   }
 }
 
-export const clienteByEmailAsync = async (email: string) => {
+export const getByEmailAsync = async (email: string) => {
   try {
     const cliente = await prisma.cliente.findUnique({
       where: { email: email },
@@ -37,5 +37,23 @@ export const clienteByEmailAsync = async (email: string) => {
     return cliente
   } catch (error) {
     throw new Error(`Erro ao buscar cliente por email: ${error.message}`)
+  }
+}
+
+export const getAllAsync = async (limit, offset) => {
+  try {
+    const [clientes, total] = await prisma.$transaction([
+      prisma.cliente.findMany({
+        skip: offset,
+        take: limit,
+      }),
+      prisma.cliente.count(),
+    ])
+
+    return { clientes, total }
+  } catch (error) {
+    throw new Error(
+      `Erro ao buscar clientes com contagem total: ${error.message}`
+    )
   }
 }

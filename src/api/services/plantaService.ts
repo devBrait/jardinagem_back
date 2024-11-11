@@ -1,6 +1,7 @@
 import { error } from 'console'
 import { prisma } from '../../database/prisma'
 import { getAllPlantaById } from '../repositories/plantaRepository'
+import * as plantaRepository from '../repositories/plantaRepository'
 
 export const createAsync = async data => {
   const {
@@ -62,7 +63,7 @@ export const createAsync = async data => {
   })
 }
 
-export const getPlantasDisponiveis =  async (id: number, quantidade: number) => {
+export const getPlantasDisponiveisService =  async (id: number, quantidade: number) => {
   
   try {
     const plantas = await getAllPlantaById(id)
@@ -82,3 +83,12 @@ export const getPlantasDisponiveis =  async (id: number, quantidade: number) => 
   }
 }
 
+export const getPlantasByFornecedorIdService = async (id: number) => {
+  try {
+    const plantasFornecedor = plantaRepository.getPlantasByFornecedorIdRepository(id)
+    return plantasFornecedor
+  }
+  catch (error){
+    throw error
+  }
+}

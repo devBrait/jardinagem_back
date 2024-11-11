@@ -23,6 +23,23 @@ export const getAllAsync = async (page = 1, limit = 10, search = '') => {
   }
 }
 
+export const getCientificoAndPopularAsync = async (
+  skip: number,
+  limit: number
+) => {
+  try {
+    const { lstNomes, total } =
+      await nomeCientificoRepository.getCientificoAndPopularAsync(skip, limit)
+
+    return {
+      lstNomes,
+      total,
+    }
+  } catch (error) {
+    throw new Error(`Erro ao buscar nomes: ${error.message}`)
+  }
+}
+
 export const AddAsync = async (nome: string) => {
   try {
     const nomeExiste = await prisma.nome_Cientifico.findFirst({

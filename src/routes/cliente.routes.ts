@@ -4,6 +4,7 @@ import {
   alternaEstadoContaAsync,
   atualizarDadosAsync,
   cadastroAsync,
+  getAllAsync,
   getAllByEmailAsync,
   loginAsync,
   redefinirSenhaAsync,
@@ -84,6 +85,109 @@ const clienteRouter = Router()
  *         description: Erro interno do servidor
  */
 clienteRouter.get('/:email', verificarToken, getAllByEmailAsync)
+/**
+ * @swagger
+ * /clientes:
+ *   get:
+ *     summary: Obtém a lista de todos os clientes com paginação
+ *     tags: [Clientes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *         description: Número da página para a paginação
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *         description: Quantidade de itens por página
+ *     responses:
+ *       200:
+ *         description: Lista de clientes obtida com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         description: ID do cliente
+ *                         example: 1
+ *                       nome:
+ *                         type: string
+ *                         description: Nome do cliente
+ *                         example: "João Pereira"
+ *                       email:
+ *                         type: string
+ *                         description: Email do cliente
+ *                         example: "joao.pereira@example.com"
+ *                       CPF:
+ *                         type: string
+ *                         description: CPF do cliente
+ *                         example: "11122233344"
+ *                       data_nascimento:
+ *                         type: string
+ *                         format: date
+ *                         description: Data de nascimento do cliente
+ *                         example: "2005-04-22"
+ *                       CEP:
+ *                         type: string
+ *                         description: CEP do cliente
+ *                         example: "11111-100"
+ *                       telefone:
+ *                         type: string
+ *                         description: Telefone do cliente
+ *                         example: "11912340631"
+ *                       ativo:
+ *                         type: boolean
+ *                         description: Indica se o cliente está ativo
+ *                         example: true
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     total:
+ *                       type: integer
+ *                       description: Total de clientes
+ *                       example: 50
+ *                     totalPages:
+ *                       type: integer
+ *                       description: Total de páginas disponíveis
+ *                       example: 5
+ *                     currentPage:
+ *                       type: integer
+ *                       description: Página atual
+ *                       example: 1
+ *                     itemsPerPage:
+ *                       type: integer
+ *                       description: Itens por página
+ *                       example: 10
+ *                     hasNext:
+ *                       type: boolean
+ *                       description: Indica se há uma próxima página
+ *                       example: true
+ *                     hasPrevious:
+ *                       type: boolean
+ *                       description: Indica se há uma página anterior
+ *                       example: false
+ *       401:
+ *         description: Não autorizado
+ *       500:
+ *         description: Erro interno do servidor
+ */
+clienteRouter.get('/', verificarToken, getAllAsync)
 /**
  * @swagger
  * /clientes:

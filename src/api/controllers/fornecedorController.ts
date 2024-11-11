@@ -1,11 +1,4 @@
-import {
-  alternaEstadoAsync,
-  createAsync,
-  getDadosByEmail,
-  novaSenhaAsync,
-  novosDadosAsync,
-  verificaLoginAsync,
-} from '../services/fornecedorService'
+import * as fornecedorService from '../services/fornecedorService'
 import nodemailer from 'nodemailer'
 
 const transporter = nodemailer.createTransport({
@@ -19,13 +12,40 @@ const transporter = nodemailer.createTransport({
 })
 
 // GET - retorna dados do fornecedor
-export const getAllByEmailAsync = async (req, res) => {
+export const getByEmailAsync = async (req, res) => {
   try {
     const { email } = req.params
-    const fornecedor = await getDadosByEmail(email)
+    const fornecedor = await fornecedorService.getByEmailAsync(email)
     res.status(200).json({
       success: true,
       fornecedor,
+    })
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message })
+  }
+}
+
+export const getAllAsync = async (req, res) => {
+  try {
+    const page = Number(req.query.page) || 1
+    const limit = Number(req.query.limit) || 10
+
+    const offset = (page - 1) * limit
+
+    const { fornecedoresConvertidos, total } =
+      await fornecedorService.getAllAsync(limit, offset)
+
+    res.status(200).json({
+      success: true,
+      data: fornecedoresConvertidos,
+      pagination: {
+        total: fornecedoresConvertidos.length,
+        totalPages: total,
+        currentPage: page,
+        itemsPerPage: limit,
+        hasNext: page < total,
+        hasPrevious: page > 1,
+      },
     })
   } catch (error) {
     res.status(400).json({ success: false, error: error.message })
@@ -45,7 +65,8 @@ export const cadastroAsync = async (req, res) => {
       CEP: CEP,
       empresa: empresa,
     }
-    const { fornecedor, token } = await createAsync(fornecedorData)
+    const { fornecedor, token } =
+      await fornecedorService.cadastroAsync(fornecedorData)
     const { senha: senhaOmitida, ...fornecedorSemSenha } = fornecedor
 
     // Define o cookie com o token JWT
@@ -85,7 +106,7 @@ export const loginAsync = async (req, res) => {
   try {
     const { email, senha } = req.body
 
-    const { token, ativo } = await verificaLoginAsync(email, senha)
+    const { token, ativo } = await fornecedorService.loginAsync(email, senha)
 
     res.cookie('token', token, {
       httpOnly: process.env.NODE_ENV === 'production',
@@ -109,7 +130,7 @@ export const redefinirSenhaAsync = async (req, res) => {
   try {
     const { email, senha } = req.body
 
-    await novaSenhaAsync(email, senha)
+    await fornecedorService.redefinirSenhaAsync(email, senha)
 
     res.status(200).json({
       success: true,
@@ -138,7 +159,7 @@ export const atualizarDadosAsync = async (req, res) => {
       razao_social,
     } = req.body
 
-    await novosDadosAsync({
+    await fornecedorService.atualizarDadosAsync({
       nome_fantasia,
       CNPJ,
       email,
@@ -167,7 +188,7 @@ export const alternaEstadoContaAsync = async (req, res) => {
   try {
     const { email } = req.body
 
-    const ativo = await alternaEstadoAsync(email)
+    const ativo = await fornecedorService.alternaEstadoContaAsync(email)
 
     //verifica se a conta esta ativa ou desativada
     if (ativo) {

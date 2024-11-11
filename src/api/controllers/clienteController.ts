@@ -1,11 +1,4 @@
-import {
-  alternaEstadoAsync,
-  createAsync,
-  getDadosByEmail,
-  novosDadosAsync,
-  senhaNovaAsync,
-  verificaLoginAsync,
-} from '../services/clienteService'
+import * as clienteService from '../services/clienteService'
 import nodemailer from 'nodemailer'
 
 const transporter = nodemailer.createTransport({
@@ -22,11 +15,40 @@ const transporter = nodemailer.createTransport({
 export const getAllByEmailAsync = async (req, res) => {
   try {
     const { email } = req.params
-    const cliente = await getDadosByEmail(email)
+    const cliente = await clienteService.getAllByEmailAsync(email)
 
     res.status(200).json({
       success: true,
       cliente,
+    })
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message })
+  }
+}
+
+export const getAllAsync = async (req, res) => {
+  try {
+    const page = Number(req.query.page) || 1
+    const limit = Number(req.query.limit) || 10
+
+    const offset = (page - 1) * limit
+
+    const { clientesConvertidos, total } = await clienteService.getAllAsync(
+      limit,
+      offset
+    )
+
+    res.status(200).json({
+      success: true,
+      data: clientesConvertidos,
+      pagination: {
+        total: clientesConvertidos.length,
+        totalPages: total,
+        currentPage: page,
+        itemsPerPage: limit,
+        hasNext: page < total,
+        hasPrevious: page > 1,
+      },
     })
   } catch (error) {
     res.status(400).json({ success: false, error: error.message })
@@ -40,7 +62,7 @@ export const cadastroAsync = async (req, res) => {
       req.body
 
     // Chama o serviço para criar o cliente e gerar o token
-    const { cliente, token } = await createAsync({
+    const { cliente, token } = await clienteService.cadastroAsync({
       email,
       senha,
       nome,
@@ -89,7 +111,7 @@ export const loginAsync = async (req, res) => {
   try {
     const { email, senha } = req.body
     // Chama o serviço para verificar o login e gerar o token
-    const { token, ativo } = await verificaLoginAsync(email, senha)
+    const { token, ativo } = await clienteService.loginAsync(email, senha)
 
     // Define o cookie com o token JWT
     res.cookie('token', token, {
@@ -112,7 +134,7 @@ export const redefinirSenhaAsync = async (req, res) => {
   try {
     const { email, senha } = req.body
 
-    await senhaNovaAsync(email, senha)
+    await clienteService.redefinirSenhaAsync(email, senha)
 
     res.status(200).json({
       success: true,
@@ -128,7 +150,7 @@ export const atualizarDadosAsync = async (req, res) => {
   try {
     const { email, nome, telefone, CPF, data_nascimento, cep, ativo } = req.body
 
-    await novosDadosAsync({
+    await clienteService.atualizarDadosAsync({
       email,
       nome,
       telefone,
@@ -151,7 +173,7 @@ export const alternaEstadoContaAsync = async (req, res) => {
   try {
     const { email } = req.body
 
-    const ativo = await alternaEstadoAsync(email)
+    const ativo = await clienteService.alternaEstadoContaAsync(email)
 
     // Verifica se a conta foi ativada ou desativada
     if (ativo) {
