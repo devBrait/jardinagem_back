@@ -2,6 +2,7 @@ import {
   AddAsync,
   getAllAsync,
   getCientificoAndPopularAsync,
+  getCientificoAndPopularSemPaginacaoAsync,
 } from '../api/controllers/nomeCientificoController'
 import { Router } from 'express'
 import verificarToken from './../middleware/auth'
@@ -203,6 +204,12 @@ nomeCientificoRouter.get(
   '/cientifico-com-popular',
   verificarToken,
   getCientificoAndPopularAsync
+)
+
+nomeCientificoRouter.get(
+  '/cientifico-com-popular-sem-paginacao',
+  verificarToken,
+  getCientificoAndPopularSemPaginacaoAsync
 )
 /**
  * @swagger

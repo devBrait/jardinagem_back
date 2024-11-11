@@ -58,6 +58,17 @@ export const getCientificoAndPopularAsync = async (req, res) => {
   }
 }
 
+export const getCientificoAndPopularSemPaginacaoAsync = async (req, res) => {
+  try {
+    const lstNomes =
+      await nomeCientificoService.getCientificoAndPopularSemPaginacaoAsync()
+
+    res.status(200).json({ success: true, data: lstNomes })
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message })
+  }
+}
+
 export const AddAsync = async (req, res) => {
   try {
     const { nome } = req.body

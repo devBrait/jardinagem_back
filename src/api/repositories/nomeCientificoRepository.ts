@@ -59,3 +59,16 @@ export const getCientificoAndPopularAsync = async (
     throw new Error(`Erro no repositório: ${error.message}`)
   }
 }
+
+export const getCientificoAndPopularSemPaginacaoAsync = async () => {
+  try {
+    const lstNomes = await prisma.nome_Cientifico.findMany({
+      include: {
+        nomesPopulares: true,
+      },
+    })
+    return lstNomes
+  } catch (error) {
+    throw new Error(`Erro no repositório: ${error.message}`)
+  }
+}

@@ -40,6 +40,17 @@ export const getCientificoAndPopularAsync = async (
   }
 }
 
+export const getCientificoAndPopularSemPaginacaoAsync = async () => {
+  try {
+    const lstNomes =
+      await nomeCientificoRepository.getCientificoAndPopularSemPaginacaoAsync()
+
+    return lstNomes
+  } catch (error) {
+    throw new Error(`Erro ao buscar nomes: ${error.message}`)
+  }
+}
+
 export const AddAsync = async (nome: string) => {
   try {
     const nomeExiste = await prisma.nome_Cientifico.findFirst({
