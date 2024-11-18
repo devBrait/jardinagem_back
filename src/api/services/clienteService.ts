@@ -87,7 +87,7 @@ export const cadastroAsync = async data => {
     }
   )
 
-  return { cliente, token }
+  return { cliente, token, id: cliente.id }
 }
 
 export const loginAsync = async (email, senha) => {
@@ -119,7 +119,7 @@ export const loginAsync = async (email, senha) => {
     }
   )
 
-  return { token, ativo: cliente.ativo }
+  return { token, ativo: cliente.ativo, id: cliente.id }
 }
 
 export const redefinirSenhaAsync = async (email, senha) => {

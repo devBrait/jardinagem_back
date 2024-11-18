@@ -107,7 +107,7 @@ export const cadastroAsync = async data => {
     }
   )
 
-  return { fornecedor, token }
+  return { fornecedor, token, id: fornecedor.id }
 }
 
 export const loginAsync = async (email, senha) => {
@@ -136,7 +136,7 @@ export const loginAsync = async (email, senha) => {
     }
   )
 
-  return { token, ativo: fornecedor.ativo }
+  return { token, ativo: fornecedor.ativo, id: fornecedor.id }
 }
 
 export const redefinirSenhaAsync = async (email, senha) => {

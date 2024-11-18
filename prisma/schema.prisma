@@ -66,6 +66,7 @@ model Planta{
   concatenar_diametro Boolean
   obs              String
   quantidade       Int
+  preco            Float
   ativo            Boolean
   pedidoItems      PedidoItem[]
 }

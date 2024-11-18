@@ -65,7 +65,7 @@ export const cadastroAsync = async (req, res) => {
       CEP: CEP,
       empresa: empresa,
     }
-    const { fornecedor, token } =
+    const { fornecedor, token, id } =
       await fornecedorService.cadastroAsync(fornecedorData)
     const { senha: senhaOmitida, ...fornecedorSemSenha } = fornecedor
 
@@ -93,7 +93,7 @@ export const cadastroAsync = async (req, res) => {
       html: `<p>Olá ${nome},</p><p>Sua conta foi criada com sucesso!</p><p>Atenciosamente,<br>UmEntrePosto</p>`,
     })
 
-    res.status(201).json({ success: true, response })
+    res.status(201).json({ success: true, response, id })
   } catch (error) {
     res
       .status(500)
@@ -106,7 +106,10 @@ export const loginAsync = async (req, res) => {
   try {
     const { email, senha } = req.body
 
-    const { token, ativo } = await fornecedorService.loginAsync(email, senha)
+    const { token, ativo, id } = await fornecedorService.loginAsync(
+      email,
+      senha
+    )
 
     res.cookie('token', token, {
       httpOnly: process.env.NODE_ENV === 'production',
@@ -119,6 +122,7 @@ export const loginAsync = async (req, res) => {
       success: true,
       message: 'Login realizado com sucesso',
       ativo,
+      id,
     })
   } catch (error) {
     res.status(500).json({ success: false, error: 'Erro ao realizar o login' })
