@@ -153,7 +153,7 @@ pedidoRouter.get('/:id', verificarToken, verificaStatus)
  *                   example: "Erro ao buscar pedidos"
  */
 
-pedidoRouter.get('/getAll', verificarToken, getAllByUserAsync)
+pedidoRouter.get('/getAll/:id', verificarToken, getAllByUserAsync)
 /**
  * @swagger
  * /pedido:

@@ -31,6 +31,19 @@ export const createAsync = async data => {
     pedidoItems,
   } = data
 
+  const lstPlantas =
+    await plantaRepository.getPlantasByFornecedorId(idFornecedor)
+
+  if (
+    lstPlantas.some(
+      planta =>
+        planta.idNomeCientifico === idNomeCientifico &&
+        planta.idNomePopular === idNomePopular
+    )
+  ) {
+    throw new Error('Planta já cadastrada para esse fornecedor.')
+  }
+
   return await prisma.planta.create({
     data: {
       idFornecedor: idFornecedor,
@@ -82,10 +95,9 @@ export const getPlantasDisponiveisService = async (
   }
 }
 
-export const getPlantasByFornecedorIdService = async (id: number) => {
+export const getPlantasByFornecedorId = async (id: number) => {
   try {
-    const plantasFornecedor =
-      plantaRepository.getPlantasByFornecedorIdRepository(id)
+    const plantasFornecedor = plantaRepository.getPlantasByFornecedorId(id)
     return plantasFornecedor
   } catch (error) {
     throw new Error('Ocorreu um erro ao buscar as plantas.')

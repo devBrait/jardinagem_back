@@ -46,7 +46,7 @@ export const getAllPlantaById = async (id: number) => {
   }
 }
 
-export const getPlantasByFornecedorIdRepository = async (id: number) => {
+export const getPlantasByFornecedorId = async (id: number) => {
   try {
     const plantasFornecedor = prisma.planta.findMany({
       where: {
@@ -56,10 +56,6 @@ export const getPlantasByFornecedorIdRepository = async (id: number) => {
 
     if (!plantasFornecedor) {
       throw new Error('Erro: fornecedor não existe')
-    }
-
-    if ((await plantasFornecedor).length === 0) {
-      throw new Error('Não há plantas para este fornecedor')
     }
 
     return plantasFornecedor

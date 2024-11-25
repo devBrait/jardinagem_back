@@ -175,9 +175,6 @@ plantaRouter.get('/planta/:id/:quantidade', getFornecedorPlantasDisponiveis)
  *                                   example: "Plantas não encontradas"
  *
  */
-plantaRouter.get(
-  '/fornecedor/:id',
-  plantaController.getPlantaByFornecedorIdController
-)
+plantaRouter.get('/fornecedor/:id', plantaController.getPlantaByFornecedorId)
 
 export default plantaRouter
