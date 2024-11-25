@@ -50,7 +50,7 @@ export const getPlantasByFornecedorId = async (id: number) => {
   try {
     const plantasFornecedor = prisma.planta.findMany({
       where: {
-        idFornecedor: Number(id),
+        idFornecedor: Number(id)
       },
     })
 
@@ -61,5 +61,19 @@ export const getPlantasByFornecedorId = async (id: number) => {
     return plantasFornecedor
   } catch (error) {
     throw new Error(`Erro: ${error.message}`)
+  }
+}
+
+export const getPlantaByIdAsync = async (id: number) => {
+  try {
+    const planta = await prisma.planta.findUnique({
+      where: { id: id },
+    })
+    if (!planta){
+      throw new Error(`Erro: ID não existe`)
+    }
+    return planta
+  } catch (error) {
+    throw new Error(`Erro: ID não existe ${error.message}`);
   }
 }

@@ -138,3 +138,20 @@ export const getPlantaByFornecedorId = async (req, res) => {
     })
   }
 }
+
+export const getPlantaByIdController = async (req, res) => {
+  try {
+    const { id } = req.params.id
+    const planta = await plantaService.getPlantaByIdService(id)
+
+    return res.status(200).json({
+      success: true,
+      data: planta,
+    })
+  } catch (error) {
+    return res.status(404).json({
+      success: false,
+      error: `Ocorreu um erro ao buscar a planta: ${error.message}`,
+    })
+  }
+}

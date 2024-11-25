@@ -71,7 +71,11 @@ plantaRouter.post('/cadastro-planta', verificarToken, cadastroPlanta)
 *                                   example: "Ocorreu um erro ao buscar as plantas"
 * 
 */
-plantaRouter.get('/planta/:id/:quantidade', getFornecedorPlantasDisponiveis)
+plantaRouter.get(
+  '/planta/:id/:quantidade',
+  verificarToken,
+  getFornecedorPlantasDisponiveis
+)
 
 /**
  * @swagger
