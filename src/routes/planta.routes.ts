@@ -71,7 +71,7 @@ plantaRouter.post('/cadastro-planta', verificarToken, cadastroPlanta)
 *                                   example: "Ocorreu um erro ao buscar as plantas"
 * 
 */
-plantaRouter.get('/planta/:id/:quantidade', getFornecedorPlantasDisponiveis)
+plantaRouter.get('/planta/:id/:quantidade', verificarToken, getFornecedorPlantasDisponiveis)
 
 /**
  * @swagger
@@ -176,8 +176,110 @@ plantaRouter.get('/planta/:id/:quantidade', getFornecedorPlantasDisponiveis)
  *
  */
 plantaRouter.get(
-  '/fornecedor/:id',
+  '/fornecedor/:id', verificarToken,
   plantaController.getPlantaByFornecedorIdController
 )
+
+/**
+* @swagger
+*
+* /plantas/planta/{id}:
+*   get: # Método get para retornar planta através do ID
+*       summary: Obter plantas a partir do id
+*       tags: [Plantas]
+*       parameters:
+*           - in: path
+*             name: id
+*             required: true
+*             description: id da planta
+*             schema:
+*               type: integer
+*               example: 1
+*       responses:
+*           200:
+*               description: Planta retornada com sucesso
+*               content:
+*                   application/json:
+*                       schema:
+*                           type: object
+*                           properties:
+*                               success:
+*                                   type: boolean
+*                                   example: true
+*                               data:
+*                                   type: object
+*                                   properties:
+*                                         id:
+*                                            type: int
+*                                            example: 1
+*                                         idFornecedor:
+*                                            type: int
+*                                            example: 1
+*                                         idNomeCientifico:
+*                                            type: int
+*                                            example: 1
+*                                         idNomePopular:
+*                                            type: int
+*                                            example: 1
+*                                         variedade:
+*                                            type: string
+*                                         cor_floracao:
+*                                            type: string
+*                                         porte:
+*                                            type: string
+*                                         topiaria:
+*                                            type: string
+*                                         forma_tronco:
+*                                            type: string
+*                                         quant_ramos:
+*                                            type: int
+*                                            example: 3
+*                                         dap:
+*                                            type: int
+*                                         diametro_copa:
+*                                            type: float
+*                                         altura_total:
+*                                            type: float
+*                                         peso_medio:
+*                                            type: float
+*                                         volume:
+*                                            type: int
+*                                         entouceirada:
+*                                            type: boolean
+*                                            example: false
+*                                         tutorada:
+*                                            type: boolean
+*                                            example: true
+*                                         embalagem:
+*                                            type: string
+*                                         diametro_base:
+*                                            type: float
+*                                         concatenar_diametro:
+*                                            type: boolean
+*                                            example: false
+*                                         obs:
+*                                            type: string
+*                                         quantidade:
+*                                            type: int
+*                                            example: 1
+*                                         ativo:
+*                                             type: boolean
+*                                             example: true
+*           404:
+*               description: Planta não existe ou id inválido
+*               content:
+*                   application/json:
+*                       schema:
+*                           type: object
+*                           properties:
+*                               success:
+*                                   type: boolean
+*                                   example: false
+*                               error:
+*                                   type: string
+*                                   example: "Id não existe"
+*
+*/
+plantaRouter.get('/planta/:id', verificarToken, plantaController.getPlantaByIdController);
 
 export default plantaRouter
