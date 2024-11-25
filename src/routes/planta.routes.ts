@@ -161,6 +161,9 @@ plantaRouter.get(
  *                                           quantidade:
  *                                               type: int
  *                                               example: 1
+ *                                           preco:
+ *                                              type: float
+ *                                              example: 10.0
  *                                           ativo:
  *                                               type: boolean
  *                                               example: true

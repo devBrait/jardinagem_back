@@ -18,6 +18,7 @@ if (process.env.NODE_ENV === 'development') {
 const allowedOrigins = [
   'http://localhost:5173',
   'https://jardinagem-front.vercel.app',
+  'https://umentreposto.vercel.app',
   'http://localhost:8080',
   'https://jardinagem-back.onrender.com',
 ]
