@@ -62,7 +62,7 @@ export const cadastroAsync = async (req, res) => {
       req.body
 
     // Chama o serviço para criar o cliente e gerar o token
-    const { cliente, token } = await clienteService.cadastroAsync({
+    const { cliente, token, id } = await clienteService.cadastroAsync({
       email,
       senha,
       nome,
@@ -99,7 +99,7 @@ export const cadastroAsync = async (req, res) => {
       html: `<p>Olá ${nome},</p><p>Sua conta foi criada com sucesso!</p><p>Atenciosamente,<br>UmEntrePosto</p>`,
     })
 
-    res.status(201).json({ success: true, response })
+    res.status(201).json({ success: true, response, id })
   } catch (error) {
     console.log(error.message)
     res.status(500).json({ success: false, error: 'Erro ao cadastrar cliente' })
@@ -111,7 +111,7 @@ export const loginAsync = async (req, res) => {
   try {
     const { email, senha } = req.body
     // Chama o serviço para verificar o login e gerar o token
-    const { token, ativo } = await clienteService.loginAsync(email, senha)
+    const { token, ativo, id } = await clienteService.loginAsync(email, senha)
 
     // Define o cookie com o token JWT
     res.cookie('token', token, {
@@ -123,7 +123,7 @@ export const loginAsync = async (req, res) => {
 
     res
       .status(200)
-      .json({ success: true, message: 'Login bem-sucedido', ativo })
+      .json({ success: true, message: 'Login bem-sucedido', ativo, id })
   } catch (error) {
     res.status(400).json({ sucess: false, error: error.message })
   }

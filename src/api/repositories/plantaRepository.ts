@@ -1,74 +1,79 @@
-import { prisma } from "../../database/prisma"
+import { prisma } from '../../database/prisma'
 
 export const getPlantaPopularByIdAsync = async (id: number) => {
-    try {
-        const plantaPopular = prisma.nome_Popular.findUnique({
-            where: {id: Number(id)}
-        })
+  try {
+    const plantaPopular = prisma.nome_Popular.findUnique({
+      where: { id: Number(id) },
+    })
 
-        if (!plantaPopular){
-            throw new Error(`Erro: ID verificado não existe.`)
-        }
+    if (!plantaPopular) {
+      throw new Error('Erro: ID verificado não existe.')
+    }
 
-        return plantaPopular
-    }
-    
-    catch (error){
-        throw new Error(`Erro: ID verificado não existe : ${error.message}}`)
-    }
+    return plantaPopular
+  } catch (error) {
+    throw new Error(`Erro: ID verificado não existe : ${error.message}}`)
+  }
 }
 
 export const getAllPlantaById = async (id: number) => {
-    try {
-        const plantaPopular = await getPlantaPopularByIdAsync(id);
-        const idPlantaCientifica = plantaPopular.idNomeCientifico
+  try {
+    const plantaPopular = await getPlantaPopularByIdAsync(id)
+    const idPlantaCientifica = plantaPopular.idNomeCientifico
 
+    const nomePlantaCientifica = await prisma.nome_Cientifico.findUnique({
+      where: {
+        id: idPlantaCientifica,
+      },
+      select: {
+        nome: true,
+      },
+    })
 
-        const nomePlantaCientifica = await prisma.nome_Cientifico.findUnique( {
-            where: {
-                id: idPlantaCientifica
-            },
-            select:{
-                nome: true
-            }
-        })
-
-        if(!nomePlantaCientifica){
-            throw new Error("Planta verificada não existe.")
-        }
-        
-        const plantas = await prisma.planta.findMany( {
-            where: {
-                nome_cientifico: nomePlantaCientifica
-            }
-        })
-
-        return plantas
+    if (!nomePlantaCientifica) {
+      throw new Error('Planta verificada não existe.')
     }
-    catch (error){
-        throw error
-    }
+
+    const plantas = await prisma.planta.findMany({
+      where: {
+        nome_cientifico: nomePlantaCientifica,
+      },
+    })
+
+    return plantas
+  } catch (error) {
+    throw new Error(`Erro: ${error.message}`)
+  }
 }
 
-export const getPlantasByFornecedorIdRepository = async (id : number)=> {
-    try {
-        const plantasFornecedor = prisma.planta.findMany({
-            where: {
-                idFornecedor: Number(id)
-            }
-        })
+export const getPlantasByFornecedorId = async (id: number) => {
+  try {
+    const plantasFornecedor = prisma.planta.findMany({
+      where: {
+        idFornecedor: Number(id)
+      },
+    })
 
-        if (!plantasFornecedor) {
-            throw new Error("Erro: fornecedor não existe")
-        }
-
-        if ((await plantasFornecedor).length === 0){
-            throw new Error("Não há plantas para este fornecedor")
-        }
-
-        return plantasFornecedor
+    if (!plantasFornecedor) {
+      throw new Error('Erro: fornecedor não existe')
     }
-    catch (error){
-        throw new Error(`Erro: ${error.message}`)
+
+    return plantasFornecedor
+  } catch (error) {
+    throw new Error(`Erro: ${error.message}`)
+  }
+}
+
+export const getPlantaByIdAsync = async (id: number) => {
+  try {
+    const planta = await prisma.planta.findUnique({
+      where: { id: id },
+    })
+    if (!planta){
+      throw new Error(`Erro: ID não existe`)
     }
+    return planta
+  } catch (error) {
+    throw new Error(`Erro: ID não existe ${error.message}`);
+  }
 }

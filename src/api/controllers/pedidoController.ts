@@ -57,13 +57,7 @@ export const getAllByUserAsync = async (req, res) => {
 
     const pedidos = await getAllAsync(id)
 
-    if (!pedidos || pedidos.length === 0) {
-      return res
-        .status(404)
-        .json({ error: 'Nenhum pedido encontrado para este ID.' })
-    }
-
-    res.status(200).json(pedidos)
+    res.status(200).json({ success: true, data: pedidos || [] })
   } catch (error) {
     res.status(500).json({ error: 'Erro ao buscar pedidos' })
   }
