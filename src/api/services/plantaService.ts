@@ -107,10 +107,9 @@ export const getPlantasByFornecedorId = async (id: number) => {
 export const getPlantaByIdService = async (id: number) => {
   try {
     const planta = await plantaRepository.getPlantaByIdAsync(id)
-    
+
     return planta
-  } 
-  catch (error) {
+  } catch (error) {
     throw Error(`Ocorreu um erro: ${error.message}`)
   }
 }

@@ -2,7 +2,7 @@ import { Router } from 'express'
 import { cadastroPlanta } from '../api/controllers/plantaController'
 import verificarToken from '../middleware/auth'
 import { getFornecedorPlantasDisponiveis } from '../api/controllers/plantaController'
-import * as plantaController from '../api/controllers/plantaController'
+import { getPlantasByFornecedorId } from '../api/controllers/plantaController'
 
 const plantaRouter = Router()
 
@@ -182,6 +182,6 @@ plantaRouter.get(
  *                                   example: "Plantas não encontradas"
  *
  */
-plantaRouter.get('/fornecedor/:id', plantaController.getPlantaByFornecedorId)
+plantaRouter.get('/fornecedor/:id', verificarToken, getPlantasByFornecedorId)
 
 export default plantaRouter
