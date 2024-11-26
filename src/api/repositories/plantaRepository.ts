@@ -54,6 +54,8 @@ export const getPlantasByFornecedorId = async (id: number) => {
       },
     })
 
+    console.log(plantasFornecedor)
+
     if (!plantasFornecedor) {
       throw new Error('Erro: fornecedor não existe')
     }
