@@ -109,9 +109,9 @@ export const getFornecedorPlantasDisponiveis = async (req, res) => {
 export const getPlantasByFornecedorId = async (req, res) => {
   try {
     const id = req.params.id
-    const plantasFornecedor = plantaService.getPlantasByFornecedorId(id)
+    const plantasFornecedor = await plantaService.getPlantasByFornecedorId(id)
 
-    const response = (await plantasFornecedor).map(planta => ({
+    const response = plantasFornecedor.map(planta => ({
       id: planta.id,
       idFornecedor: planta.idFornecedor,
       idNomeCientifico: planta.idNomeCientifico,
