@@ -1,4 +1,5 @@
 import { prisma } from '../../database/prisma'
+import * as NomePopularRepository from '../repositories/nomePopularRepository'
 
 export const addAsync = async (nome, idNomeCientifico) => {
   try {
@@ -21,5 +22,15 @@ export const addAsync = async (nome, idNomeCientifico) => {
     })
   } catch (error) {
     throw new Error(`Erro ao adicionar: ${error.message}`)
+  }
+}
+
+export const GetAllAsync = async () => {
+  try {
+    const lstNomes = await NomePopularRepository.GetAllAsync()
+
+    return lstNomes
+  } catch (error) {
+    throw new Error(`Erro ao buscar: ${error.message}`)
   }
 }

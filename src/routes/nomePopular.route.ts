@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import verificarToken from './../middleware/auth'
-import { AddAsync } from '../api/controllers/nomePopularController'
+import { AddAsync, GetAllAsync } from '../api/controllers/nomePopularController'
 
 const nomePopularRouter = Router()
 
@@ -126,5 +126,112 @@ const nomePopularRouter = Router()
  *                   example: "Erro interno do servidor"
  */
 nomePopularRouter.post('/', verificarToken, AddAsync)
+/**
+ * @swagger
+ * /nomes-populares:
+ *   get:
+ *     summary: Lista todos os nomes populares
+ *     description: Recupera uma lista de todos os nomes populares cadastrados no banco de dados, com informações relacionadas.
+ *     tags: [Nomes Populares]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de nomes populares retornada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         example: 1
+ *                       nome:
+ *                         type: string
+ *                         example: "Rosa"
+ *                       idNomeCientifico:
+ *                         type: integer
+ *                         example: 1
+ *                       nomeCientifico:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                             example: 1
+ *                           nome:
+ *                             type: string
+ *                             example: "Rosa spp."
+ *                       plantas:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             id:
+ *                               type: integer
+ *                               example: 10
+ *                             nome:
+ *                               type: string
+ *                               example: "Planta de Rosa"
+ *                             preco:
+ *                               type: number
+ *                               format: float
+ *                               example: 15.50
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     total:
+ *                       type: integer
+ *                       example: 100
+ *                     totalPages:
+ *                       type: integer
+ *                       example: 10
+ *                     currentPage:
+ *                       type: integer
+ *                       example: 1
+ *                     itemsPerPage:
+ *                       type: integer
+ *                       example: 10
+ *                     hasNext:
+ *                       type: boolean
+ *                       example: true
+ *                     hasPrevious:
+ *                       type: boolean
+ *                       example: false
+ *       401:
+ *         description: Não autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Token não fornecido ou inválido"
+ *       500:
+ *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Erro interno do servidor"
+ */
+nomePopularRouter.get('/', verificarToken, GetAllAsync)
 
 export default nomePopularRouter
