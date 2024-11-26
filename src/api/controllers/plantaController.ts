@@ -106,7 +106,7 @@ export const getFornecedorPlantasDisponiveis = async (req, res) => {
   }
 }
 
-export const getPlantaByFornecedorId = async (req, res) => {
+export const getPlantasByFornecedorId = async (req, res) => {
   try {
     const id = req.params.id
     const plantasFornecedor = plantaService.getPlantasByFornecedorId(id)
@@ -121,8 +121,8 @@ export const getPlantaByFornecedorId = async (req, res) => {
       topiaria: planta.topiaria,
       altura_total: planta.altura_total,
       quantidade: planta.quantidade,
-      ativo: planta.ativo,
       preco: planta.preco,
+      ativo: planta.ativo,
     }))
 
     return res.status(200).json({
