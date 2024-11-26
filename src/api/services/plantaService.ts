@@ -97,7 +97,8 @@ export const getPlantasDisponiveisService = async (
 
 export const getPlantasByFornecedorId = async (id: number) => {
   try {
-    const plantasFornecedor = plantaRepository.getPlantasByFornecedorId(id)
+    const plantasFornecedor =
+      await plantaRepository.getPlantasByFornecedorId(id)
     return plantasFornecedor
   } catch (error) {
     throw new Error('Ocorreu um erro ao buscar as plantas.')
