@@ -125,6 +125,9 @@ export const getPlantasByFornecedorId = async (req, res) => {
       ativo: planta.ativo,
     }))
 
+    console.log(plantasFornecedor)
+    console.log(response)
+
     return res.status(200).json({
       success: true,
       data: response,
