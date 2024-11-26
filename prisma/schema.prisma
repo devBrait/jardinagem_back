@@ -7,105 +7,104 @@ datasource db {
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
+
 model Cliente {
-  id    Int   @id @default(autoincrement())
-  CPF BigInt @unique
-  nome  String
-  email String @unique
+  id              Int      @id @default(autoincrement())
+  CPF             BigInt   @unique
+  nome            String
+  email           String   @unique
   data_nascimento DateTime
-  CEP String
-  telefone BigInt
-  ativo Boolean
-  senha String
-  pedidos Pedido[]
+  CEP             String
+  telefone        BigInt
+  senha           String
+  ativo           Boolean
+  pedidos         Pedido[]
 }
 
 model Fornecedor {
-  id Int @id @default(autoincrement())
-  plantas Planta[]
-  CNPJ BigInt @unique
+  id            Int      @id @default(autoincrement())
+  CNPJ          BigInt   @unique
+  razao_social  String
+  ctt_1         String
+  telefone_1    BigInt
+  ctt_2         String
+  telefone_2    BigInt
+  email         String   @unique
+  site          String
+  instagram     String
+  CEP           String   @unique
+  obs           String
+  ativo         Boolean
+  senha         String
   nome_fantasia String
-  razao_social String
-  ctt_1 String
-  telefone_1 BigInt
-  ctt_2 String
-  telefone_2 BigInt
-  email String @unique
-  site String
-  instagram String
-  CEP String @unique
-  obs String
-  ativo Boolean
-  senha String
+  plantas       Planta[]
 }
 
-model Planta{
-  id                Int              @id @default(autoincrement())
-  fornecedor        Fornecedor       @relation(fields: [idFornecedor], references: [id])
-  idFornecedor      Int
-  nome_cientifico   Nome_Cientifico   @relation("NomeCientificoPlanta", fields: [idNomeCientifico], references: [id])
-  idNomeCientifico  Int               // Relação de muitos para um com Nome_Cientifico
-  nome_popular      Nome_Popular      @relation("NomePopularPlantas", fields: [idNomePopular], references: [id])
-  idNomePopular     Int               // Relação de muitos para um com Nome_Popular
-  variedade         String
-  cor_floracao      String
-  porte            String
-  topiaria         String
-  forma_tronco     String
-  quant_ramos      Int
-  dap              Int
-  diametro_copa    Float
-  altura_ramo      Float
-  altura_total     Float
-  peso_medio       Float
-  volume           Int
-  entouceirada     Boolean
-  tutorada         Boolean
-  embalagem        String
-  diametro_base    Float
+model Planta {
+  id                  Int             @id @default(autoincrement())
+  idFornecedor        Int
+  variedade           String
+  cor_floracao        String
+  porte               String
+  topiaria            String
+  forma_tronco        String
+  quant_ramos         Int
+  dap                 Int
+  diametro_copa       Float
+  altura_ramo         Float
+  altura_total        Float
+  peso_medio          Float
+  volume              Int
+  entouceirada        Boolean
+  tutorada            Boolean
+  embalagem           String
+  diametro_base       Float
   concatenar_diametro Boolean
-  obs              String
-  quantidade       Int
-  preco            Float
-  ativo            Boolean
-  pedidoItems      PedidoItem[]
+  obs                 String
+  ativo               Boolean
+  idNomeCientifico    Int
+  idNomePopular       Int
+  quantidade          Int
+  preco               Float
+  pedidoItems         PedidoItem[]
+  fornecedor          Fornecedor      @relation(fields: [idFornecedor], references: [id])
+  nome_cientifico     Nome_Cientifico @relation("NomeCientificoPlanta", fields: [idNomeCientifico], references: [id])
+  nome_popular        Nome_Popular    @relation("NomePopularPlantas", fields: [idNomePopular], references: [id])
 }
 
 model Nome_Cientifico {
-  id                Int              @id @default(autoincrement())
-  nome              String           @unique
-  nomesPopulares    Nome_Popular[]   @relation("NomeCientificoPopulares")
-  plantas           Planta[]         @relation("NomeCientificoPlanta")
+  id             Int            @id @default(autoincrement())
+  nome           String         @unique
+  nomesPopulares Nome_Popular[] @relation("NomeCientificoPopulares")
+  plantas        Planta[]       @relation("NomeCientificoPlanta")
 }
 
 model Nome_Popular {
-  id                Int              @id @default(autoincrement())
-  nome              String
-  nomeCientifico    Nome_Cientifico   @relation("NomeCientificoPopulares", fields: [idNomeCientifico], references: [id])
-  idNomeCientifico  Int             
-  plantas           Planta[]         @relation("NomePopularPlantas")
+  id               Int             @id @default(autoincrement())
+  nome             String
+  idNomeCientifico Int
+  nomeCientifico   Nome_Cientifico @relation("NomeCientificoPopulares", fields: [idNomeCientifico], references: [id])
+  plantas          Planta[]        @relation("NomePopularPlantas")
 }
 
-
 model Pedido {
-  id             Int         @id @default(autoincrement())
-  cliente        Cliente     @relation(fields: [idCliente], references: [id])
-  idCliente      Int
-  data_criacao   DateTime    @default(now())
-  status         String
-  valor_total    Float
-  CEP String
+  id              Int          @id @default(autoincrement())
+  idCliente       Int
+  data_criacao    DateTime     @default(now())
+  status          String
+  valor_total     Float
+  CEP             String
   numero_endereco Int
-  pedidoItems    PedidoItem[]
+  cliente         Cliente      @relation(fields: [idCliente], references: [id])
+  pedidoItems     PedidoItem[]
 }
 
 model PedidoItem {
-  id             Int         @id @default(autoincrement())
-  pedido         Pedido      @relation(fields: [idPedido], references: [id])
+  id             Int    @id @default(autoincrement())
   idPedido       Int
-  planta         Planta      @relation(fields: [idPlanta], references: [id])
   idPlanta       Int
   quantidade     Int
   preco_unitario Float
+  pedido         Pedido @relation(fields: [idPedido], references: [id])
+  planta         Planta @relation(fields: [idPlanta], references: [id])
 }
-
