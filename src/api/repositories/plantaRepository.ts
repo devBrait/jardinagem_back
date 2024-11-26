@@ -48,7 +48,7 @@ export const getAllPlantaById = async (id: number) => {
 
 export const getPlantasByFornecedorId = async (id: number) => {
   try {
-    const plantasFornecedor = prisma.planta.findMany({
+    const plantasFornecedor = await prisma.planta.findMany({
       where: {
         idFornecedor: Number(id),
       },
