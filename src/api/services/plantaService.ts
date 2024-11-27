@@ -114,3 +114,39 @@ export const getPlantaByIdService = async (id: number) => {
     throw Error(`Ocorreu um erro: ${error.message}`)
   }
 }
+
+export const updateQuantidadeAsync = async (id: number, quantidade: number) => {
+  try {
+    let ativo = true
+
+    if (quantidade === 0) {
+      ativo = false
+    }
+
+    const planta = await prisma.planta.update({
+      where: { id: id },
+      data: { quantidade: quantidade, ativo: ativo },
+    })
+
+    return planta
+  } catch (error) {
+    throw Error(`Ocorreu um erro: ${error.message}`)
+  }
+}
+
+export const alternaEstadoAsync = async id => {
+  const planta = await plantaRepository.getPlantaByIdAsync(id)
+
+  if (!planta) {
+    throw new Error('Planta não encontrada')
+  }
+
+  const novoEstado = !planta.ativo // Inverte o estado atual
+
+  await prisma.planta.update({
+    where: { id: id },
+    data: { ativo: novoEstado },
+  })
+
+  return novoEstado
+}

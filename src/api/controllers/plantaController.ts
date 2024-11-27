@@ -153,3 +153,43 @@ export const getPlantaByIdController = async (req, res) => {
     })
   }
 }
+
+export const updateQuantidadeAsync = async (req, res) => {
+  try {
+    const { id, quantidade } = req.body
+    const planta = await plantaService.updateQuantidadeAsync(id, quantidade)
+
+    return res.status(200).json({
+      success: true,
+      data: planta,
+    })
+  } catch (error) {
+    return res.status(404).json({
+      success: false,
+      error: `Ocorreu um erro ao atualizar a quantidade: ${error.message}`,
+    })
+  }
+}
+
+export const alternaEstadoAsync = async (req, res) => {
+  try {
+    const { id } = req.body
+
+    const ativo = await plantaService.alternaEstadoAsync(id)
+
+    // Verifica se a conta foi ativada ou desativada
+    if (ativo) {
+      res.status(200).json({
+        success: true,
+        message: 'Planta ativada com sucesso',
+      })
+    } else {
+      res.status(200).json({
+        success: true,
+        message: 'Planta desativada com sucesso',
+      })
+    }
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message })
+  }
+}

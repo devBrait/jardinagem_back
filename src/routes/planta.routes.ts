@@ -1,8 +1,12 @@
 import { Router } from 'express'
-import { cadastroPlanta } from '../api/controllers/plantaController'
+import {
+  alternaEstadoAsync,
+  cadastroPlanta,
+  updateQuantidadeAsync,
+  getFornecedorPlantasDisponiveis,
+  getPlantasByFornecedorId,
+} from '../api/controllers/plantaController'
 import verificarToken from '../middleware/auth'
-import { getFornecedorPlantasDisponiveis } from '../api/controllers/plantaController'
-import { getPlantasByFornecedorId } from '../api/controllers/plantaController'
 
 const plantaRouter = Router()
 
@@ -183,5 +187,173 @@ plantaRouter.get(
  *
  */
 plantaRouter.get('/fornecedor/:id', verificarToken, getPlantasByFornecedorId)
+/**
+ * @swagger
+ *
+ * /quantidade:
+ *   put:
+ *     summary: Atualiza a quantidade de uma planta
+ *     description: Permite atualizar a quantidade disponível de uma planta no sistema. É necessário estar autenticado.
+ *     tags: [Plantas]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: string
+ *                 description: ID da planta a ser atualizada
+ *                 example: "123e4567-e89b-12d3-a456-426614174000"
+ *               quantidade:
+ *                 type: integer
+ *                 description: Nova quantidade da planta
+ *                 example: 10
+ *     responses:
+ *       200:
+ *         description: Quantidade da planta atualizada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: "123e4567-e89b-12d3-a456-426614174000"
+ *                     quantidade:
+ *                       type: integer
+ *                       example: 10
+ *       400:
+ *         description: Dados inválidos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "ID ou quantidade inválidos"
+ *       401:
+ *         description: Usuário não autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Token inválido ou expirado"
+ *       404:
+ *         description: Planta não encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Planta não encontrada"
+ */
+plantaRouter.put('/quantidade', verificarToken, updateQuantidadeAsync)
+/**
+ * @swagger
+ *
+ * /alterna-estado:
+ *   put:
+ *     summary: Alterna o estado de uma planta
+ *     description: Ativa ou desativa o estado de uma planta com base no seu ID. É necessário estar autenticado.
+ *     tags: [Plantas]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: string
+ *                 description: ID da planta cujo estado será alternado
+ *                 example: "123e4567-e89b-12d3-a456-426614174000"
+ *     responses:
+ *       200:
+ *         description: Estado da planta alternado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: "123e4567-e89b-12d3-a456-426614174000"
+ *                     ativo:
+ *                       type: boolean
+ *                       example: false
+ *       400:
+ *         description: Dados inválidos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "ID inválido"
+ *       401:
+ *         description: Usuário não autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Token inválido ou expirado"
+ *       404:
+ *         description: Planta não encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Planta não encontrada"
+ */
+plantaRouter.put('/alterna-estado', verificarToken, alternaEstadoAsync)
 
 export default plantaRouter
