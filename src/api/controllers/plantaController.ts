@@ -85,18 +85,12 @@ export const getFornecedorPlantasDisponiveis = async (req, res) => {
       quantidade
     )
 
-    const response = plantasDisponiveis.map(planta => ({
-      fornecedor: planta.idFornecedor,
-      quantidade: planta.quantidade,
-    }))
-
-    const responseJson = JSON.stringify(response)
-
     return res.status(201).json({
       sucess: true,
-      data: responseJson,
+      data: plantasDisponiveis,
     })
   } catch (error) {
+    console.log(error.message)
     return res.status(500).json({
       success: false,
       error: 'Ocorreu um erro ao buscar as plantas.',

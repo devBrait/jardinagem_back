@@ -76,7 +76,7 @@ plantaRouter.post('/cadastro-planta', verificarToken, cadastroPlanta)
 * 
 */
 plantaRouter.get(
-  '/planta/:id/:quantidade',
+  '/busca-opcoes/:id/:quantidade',
   verificarToken,
   getFornecedorPlantasDisponiveis
 )

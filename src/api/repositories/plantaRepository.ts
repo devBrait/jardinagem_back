@@ -16,31 +16,43 @@ export const getPlantaPopularByIdAsync = async (id: number) => {
   }
 }
 
-export const getAllPlantaById = async (id: number) => {
+export const getAllPlantaById = async (id: number, quantidade: number) => {
   try {
     const plantaPopular = await getPlantaPopularByIdAsync(id)
     const idPlantaCientifica = plantaPopular.idNomeCientifico
 
-    const nomePlantaCientifica = await prisma.nome_Cientifico.findUnique({
+    let plantasDisponiveis = await prisma.planta.findMany({
       where: {
-        id: idPlantaCientifica,
+        idNomeCientifico: idPlantaCientifica,
+        quantidade: {
+          gte: Number(quantidade),
+        },
       },
-      select: {
-        nome: true,
+      include: {
+        fornecedor: {
+          select: {
+            nome_fantasia: true,
+          },
+        },
       },
     })
 
-    if (!nomePlantaCientifica) {
-      throw new Error('Planta verificada não existe.')
+    if (plantasDisponiveis.length === 0) {
+      plantasDisponiveis = await prisma.planta.findMany({
+        where: {
+          idNomeCientifico: idPlantaCientifica,
+        },
+        include: {
+          fornecedor: {
+            select: {
+              nome_fantasia: true,
+            },
+          },
+        },
+      })
     }
 
-    const plantas = await prisma.planta.findMany({
-      where: {
-        nome_cientifico: nomePlantaCientifica,
-      },
-    })
-
-    return plantas
+    return plantasDisponiveis
   } catch (error) {
     throw new Error(`Erro: ${error.message}`)
   }

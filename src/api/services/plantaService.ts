@@ -79,17 +79,22 @@ export const getPlantasDisponiveisService = async (
   quantidade: number
 ) => {
   try {
-    const plantas = await getAllPlantaById(id)
+    const plantasDisponiveis = await getAllPlantaById(id, quantidade)
 
-    const plantasDisponiveis = plantas.filter(planta => {
-      planta.quantidade >= quantidade
+    const response = plantasDisponiveis.map(planta => {
+      const quantidadeFinal =
+        quantidade >= planta.quantidade ? planta.quantidade : quantidade
+
+      return {
+        idPlanta: planta.id,
+        id_fornecedor: planta.idFornecedor,
+        nome_fornecedor: planta.fornecedor.nome_fantasia,
+        preco: planta.preco,
+        quantidade: quantidadeFinal,
+      }
     })
 
-    if (plantasDisponiveis.length === 0) {
-      throw new Error('Não há plantas disponíveis para essa quantidade.')
-    }
-
-    return plantasDisponiveis
+    return response
   } catch (error) {
     throw new Error('Ocorreu um erro ao buscar as plantas.')
   }
@@ -118,7 +123,7 @@ export const getPlantaByIdService = async (id: number) => {
 export const updateQuantidadeAsync = async (id: number, quantidade: number) => {
   try {
     let ativo = true
-
+    console.log(quantidade)
     if (quantidade === 0) {
       ativo = false
     }

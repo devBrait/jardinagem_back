@@ -5,7 +5,7 @@ import { retornaStatus } from '../services/pedidoService'
 export const cadastraPedido = async (req, res) => {
   try {
     const {
-      id,
+      idCliente,
       data_criacao,
       status,
       valor_total,
@@ -13,9 +13,10 @@ export const cadastraPedido = async (req, res) => {
       numero_endereco,
       pedidoItems,
     } = req.body
+    console.log(req.body)
 
     const pedidoData = {
-      id: id,
+      idCliente: idCliente,
       data_criacao: data_criacao,
       status: status,
       valor_total: valor_total,
@@ -28,12 +29,13 @@ export const cadastraPedido = async (req, res) => {
 
     const pedidoResponse = {
       ...pedido,
-      cliente: JSON.stringify(pedidoData.id),
+      cliente: JSON.stringify(pedidoData.idCliente),
       pedidoItems: JSON.stringify(pedidoData.pedidoItems),
     }
 
     return res.status(201).send(pedidoResponse)
   } catch (error) {
+    console.log(error.message)
     res.status(500).json({ error: 'erro ao cadastrar pedido' })
   }
 }
