@@ -3,10 +3,11 @@ import {
   retornaPedido,
   retornaPedidosAsync,
 } from '../repositories/pedidoRepository'
+import * as plantaService from './plantaService'
 
 export const createAsync = async data => {
   const {
-    id,
+    idCliente,
     data_criacao,
     status,
     valor_total,
@@ -17,23 +18,38 @@ export const createAsync = async data => {
 
   const data_criacao_formatada = new Date(data_criacao)
 
-  return await prisma.pedido.create({
-    data: {
-      idCliente: id,
-      data_criacao: data_criacao_formatada,
-      status,
-      valor_total,
-      CEP,
-      numero_endereco,
-      pedidoItems: {
-        create: pedidoItems.map(item => ({
-          idPlanta: item.idPlanta,
-          quantidade: item.quantidade,
-          preco_unitario: item.preco_unitario,
-        })),
+  const prismaTransaction = await prisma.$transaction(async prisma => {
+    // Atualizar a quantidade das plantas, uma por uma
+    for (let i = 0; i < pedidoItems.create.length; i++) {
+      await plantaService.updateQuantidadeAsync(
+        pedidoItems.create[i].idPlanta,
+        pedidoItems.create[i].quantidade
+      )
+    }
+
+    // Criação do pedido
+    const pedidoCriado = await prisma.pedido.create({
+      data: {
+        idCliente: idCliente,
+        data_criacao: data_criacao_formatada,
+        status,
+        valor_total,
+        CEP,
+        numero_endereco: Number(numero_endereco),
+        pedidoItems: {
+          create: pedidoItems.create.map(item => ({
+            idPlanta: item.idPlanta,
+            quantidade: item.quantidade,
+            preco_unitario: item.preco_unitario,
+          })),
+        },
       },
-    },
+    })
+
+    return pedidoCriado
   })
+
+  return prismaTransaction
 }
 
 export const retornaStatus = async (id: number) => {

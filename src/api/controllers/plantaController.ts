@@ -85,18 +85,12 @@ export const getFornecedorPlantasDisponiveis = async (req, res) => {
       quantidade
     )
 
-    const response = plantasDisponiveis.map(planta => ({
-      fornecedor: planta.idFornecedor,
-      quantidade: planta.quantidade,
-    }))
-
-    const responseJson = JSON.stringify(response)
-
     return res.status(201).json({
       sucess: true,
-      data: responseJson,
+      data: plantasDisponiveis,
     })
   } catch (error) {
+    console.log(error.message)
     return res.status(500).json({
       success: false,
       error: 'Ocorreu um erro ao buscar as plantas.',
@@ -151,5 +145,45 @@ export const getPlantaByIdController = async (req, res) => {
       success: false,
       error: `Ocorreu um erro ao buscar a planta: ${error.message}`,
     })
+  }
+}
+
+export const updateQuantidadeAsync = async (req, res) => {
+  try {
+    const { id, quantidade } = req.body
+    const planta = await plantaService.updateQuantidadeAsync(id, quantidade)
+
+    return res.status(200).json({
+      success: true,
+      data: planta,
+    })
+  } catch (error) {
+    return res.status(404).json({
+      success: false,
+      error: `Ocorreu um erro ao atualizar a quantidade: ${error.message}`,
+    })
+  }
+}
+
+export const alternaEstadoAsync = async (req, res) => {
+  try {
+    const { id } = req.body
+
+    const ativo = await plantaService.alternaEstadoAsync(id)
+
+    // Verifica se a conta foi ativada ou desativada
+    if (ativo) {
+      res.status(200).json({
+        success: true,
+        message: 'Planta ativada com sucesso',
+      })
+    } else {
+      res.status(200).json({
+        success: true,
+        message: 'Planta desativada com sucesso',
+      })
+    }
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message })
   }
 }

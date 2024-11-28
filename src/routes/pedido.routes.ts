@@ -34,7 +34,7 @@ const pedidoRouter = Router()
  *         pedidoItems:
  *           type: array
  *           items:
- *             $ref: '#/components/schemas/PedidoItem'  # Referência ao esquema PedidoItem
+ *             $ref: '#/components/schemas/PedidoItem'
  *
  *     PedidoItem:
  *       type: object
@@ -227,6 +227,6 @@ pedidoRouter.get('/getAll/:id', verificarToken, getAllByUserAsync)
  *                   type: string
  *                   example: "Erro na requisição. Dados do pedido inválidos."
  */
-pedidoRouter.post('/pedido', verificarToken, cadastraPedido)
+pedidoRouter.post('/', verificarToken, cadastraPedido)
 
 export default pedidoRouter
