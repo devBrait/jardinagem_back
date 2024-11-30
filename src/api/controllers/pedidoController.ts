@@ -1,5 +1,4 @@
-import { createAsync, getAllAsync } from '../services/pedidoService'
-import { retornaStatus } from '../services/pedidoService'
+import * as pedidoService from '../services/pedidoService'
 
 // POST
 export const cadastraPedido = async (req, res) => {
@@ -25,7 +24,7 @@ export const cadastraPedido = async (req, res) => {
       pedidoItems: pedidoItems,
     }
 
-    const pedido = await createAsync(pedidoData)
+    const pedido = await pedidoService.createAsync(pedidoData)
 
     const pedidoResponse = {
       ...pedido,
@@ -44,7 +43,7 @@ export const cadastraPedido = async (req, res) => {
 export const verificaStatus = async (req, res) => {
   try {
     const id = req.params
-    const status = await retornaStatus(id)
+    const status = await pedidoService.retornaStatus(id)
 
     return res.status(201).json(status)
   } catch (error) {
@@ -57,10 +56,61 @@ export const getAllByUserAsync = async (req, res) => {
   try {
     const { id } = req.params
 
-    const pedidos = await getAllAsync(id)
+    const pedidos = await pedidoService.getAllAsync(id)
 
     res.status(200).json({ success: true, data: pedidos || [] })
   } catch (error) {
     res.status(500).json({ error: 'Erro ao buscar pedidos' })
+  }
+}
+
+export const getAllByFornecedorAsync = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const pedidos = await pedidoService.getAllByFornecedorAsync(id)
+
+    res.status(200).json({ success: true, data: pedidos || [] })
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao buscar pedidos' })
+  }
+}
+
+export const getByIdAsync = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const pedido = await pedidoService.getByIdAsync(id)
+
+    res.status(200).json({ success: true, data: pedido || [] })
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao buscar pedidos' })
+  }
+}
+
+export const getAllPlantasByFornecedorAsync = async (req, res) => {
+  try {
+    const { idFornecedor, idPedido } = req.params
+
+    const lstPlantas = await pedidoService.getAllPlantasByFornecedorAsync(
+      idFornecedor,
+      idPedido
+    )
+    console.log(lstPlantas)
+    res.status(200).json({ success: true, data: lstPlantas || [] })
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao buscar pedidos' })
+  }
+}
+
+export const alternaEstadoAsync = async (req, res) => {
+  try {
+    const { id } = req.body
+
+    const pedido = await pedidoService.alternaEstadoAsync(id)
+
+    res.status(200).json({ success: true, data: pedido })
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao alterar status do pedido' })
   }
 }

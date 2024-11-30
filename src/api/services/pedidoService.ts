@@ -1,8 +1,5 @@
 import { prisma } from '../../database/prisma'
-import {
-  retornaPedido,
-  retornaPedidosAsync,
-} from '../repositories/pedidoRepository'
+import * as pedidoRepository from '../repositories/pedidoRepository'
 import * as plantaService from './plantaService'
 
 export const createAsync = async data => {
@@ -54,7 +51,7 @@ export const createAsync = async data => {
 
 export const retornaStatus = async (id: number) => {
   try {
-    const pedido = await retornaPedido(id)
+    const pedido = await pedidoRepository.getByIdAsync(id)
     const status = pedido.status
 
     return status
@@ -65,9 +62,58 @@ export const retornaStatus = async (id: number) => {
 
 export const getAllAsync = async (id: number) => {
   try {
-    const pedidos = await retornaPedidosAsync(id)
+    const pedidos = await pedidoRepository.retornaPedidosAsync(id)
 
     return pedidos
+  } catch (error) {
+    return error
+  }
+}
+
+export const getByIdAsync = async (id: number) => {
+  try {
+    const pedido = await pedidoRepository.getByIdAsync(id)
+
+    return pedido
+  } catch (error) {
+    return error
+  }
+}
+
+export const getAllByFornecedorAsync = async (id: number) => {
+  try {
+    const pedidos = await pedidoRepository.getAllByFornecedorAsync(id)
+
+    return pedidos
+  } catch (error) {
+    return error
+  }
+}
+
+export const getAllPlantasByFornecedorAsync = async (
+  idFornecedor: number,
+  idPedido: number
+) => {
+  try {
+    const lstPlantas = await pedidoRepository.getAllPlantasByFornecedorAsync(
+      idFornecedor,
+      idPedido
+    )
+
+    return lstPlantas
+  } catch (error) {
+    return error
+  }
+}
+
+export const alternaEstadoAsync = async (id: number) => {
+  try {
+    await prisma.pedido.update({
+      where: { id: id },
+      data: { status: 'Cancelado' },
+    })
+
+    return { success: true }
   } catch (error) {
     return error
   }
