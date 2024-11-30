@@ -1,7 +1,11 @@
 import { Router } from 'express'
 import {
+  alternaEstadoAsync,
   cadastraPedido,
+  getAllByFornecedorAsync,
   getAllByUserAsync,
+  getAllPlantasByFornecedorAsync,
+  getByIdAsync,
 } from '../api/controllers/pedidoController'
 import { verificaStatus } from '../api/controllers/pedidoController'
 import verificarToken from '../middleware/auth'
@@ -153,7 +157,7 @@ pedidoRouter.get('/:id', verificarToken, verificaStatus)
  *                   example: "Erro ao buscar pedidos"
  */
 
-pedidoRouter.get('/getAll/:id', verificarToken, getAllByUserAsync)
+pedidoRouter.get('/getAllCliente/:id', verificarToken, getAllByUserAsync)
 /**
  * @swagger
  * /pedido:
@@ -228,5 +232,21 @@ pedidoRouter.get('/getAll/:id', verificarToken, getAllByUserAsync)
  *                   example: "Erro na requisição. Dados do pedido inválidos."
  */
 pedidoRouter.post('/', verificarToken, cadastraPedido)
+
+pedidoRouter.get(
+  '/getAllFornecedor/:id',
+  verificarToken,
+  getAllByFornecedorAsync
+)
+
+pedidoRouter.get('/getById/:id', verificarToken, getByIdAsync)
+
+pedidoRouter.get(
+  '/getAllNomesPlantas/:idFornecedor/:idPedido',
+  verificarToken,
+  getAllPlantasByFornecedorAsync
+)
+
+pedidoRouter.put('/alterna-estado', verificarToken, alternaEstadoAsync)
 
 export default pedidoRouter
