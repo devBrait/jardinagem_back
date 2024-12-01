@@ -3,8 +3,8 @@ import {
   alternaEstadoAsync,
   cadastroPlanta,
   updateQuantidadeAsync,
-  getFornecedorPlantasDisponiveis,
-  getPlantasByFornecedorId,
+  getFornecedorPlantasDisponiveisAsync,
+  getPlantasByFornecedorIdAsync,
 } from '../api/controllers/plantaController'
 import verificarToken from '../middleware/auth'
 
@@ -78,7 +78,7 @@ plantaRouter.post('/cadastro-planta', verificarToken, cadastroPlanta)
 plantaRouter.get(
   '/busca-opcoes/:id/:quantidade',
   verificarToken,
-  getFornecedorPlantasDisponiveis
+  getFornecedorPlantasDisponiveisAsync
 )
 
 /**
@@ -186,7 +186,7 @@ plantaRouter.get(
  *                                   example: "Plantas não encontradas"
  *
  */
-plantaRouter.get('/fornecedor/:id', verificarToken, getPlantasByFornecedorId)
+plantaRouter.get('/fornecedor/:id', verificarToken, getPlantasByFornecedorIdAsync)
 /**
  * @swagger
  *

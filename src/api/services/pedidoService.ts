@@ -49,7 +49,7 @@ export const createAsync = async data => {
   return prismaTransaction
 }
 
-export const retornaStatus = async (id: number) => {
+export const retornaStatusAsync = async (id: number) => {
   try {
     const pedido = await pedidoRepository.getByIdAsync(id)
     const status = pedido.status

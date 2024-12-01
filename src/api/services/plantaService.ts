@@ -1,5 +1,4 @@
 import { prisma } from '../../database/prisma'
-import { getAllPlantaById } from '../repositories/plantaRepository'
 import * as plantaRepository from '../repositories/plantaRepository'
 
 export const createAsync = async data => {
@@ -32,7 +31,7 @@ export const createAsync = async data => {
   } = data
 
   const lstPlantas =
-    await plantaRepository.getPlantasByFornecedorId(idFornecedor)
+    await plantaRepository.getPlantasByFornecedorIdAsync(idFornecedor)
 
   if (
     lstPlantas.some(
@@ -74,12 +73,12 @@ export const createAsync = async data => {
   })
 }
 
-export const getPlantasDisponiveisService = async (
+export const getPlantasDisponiveisAsync = async (
   id: number,
   quantidade: number
 ) => {
   try {
-    const plantasDisponiveis = await getAllPlantaById(id, quantidade)
+    const plantasDisponiveis = await plantaRepository.getAllPlantaByIdAsync(id, quantidade)
 
     const response = plantasDisponiveis.map(planta => {
       const quantidadeFinal =
@@ -100,17 +99,17 @@ export const getPlantasDisponiveisService = async (
   }
 }
 
-export const getPlantasByFornecedorId = async (id: number) => {
+export const getPlantasByFornecedorIdAsync = async (id: number) => {
   try {
     const plantasFornecedor =
-      await plantaRepository.getPlantasByFornecedorId(id)
+      await plantaRepository.getPlantasByFornecedorIdAsync(id)
     return plantasFornecedor
   } catch (error) {
     throw new Error('Ocorreu um erro ao buscar as plantas.')
   }
 }
 
-export const getPlantaByIdService = async (id: number) => {
+export const getPlantaByIdAsync = async (id: number) => {
   try {
     const planta = await plantaRepository.getPlantaByIdAsync(id)
 

@@ -16,7 +16,7 @@ export const getPlantaPopularByIdAsync = async (id: number) => {
   }
 }
 
-export const getAllPlantaById = async (id: number, quantidade: number) => {
+export const getAllPlantaByIdAsync = async (id: number, quantidade: number) => {
   try {
     const plantaPopular = await getPlantaPopularByIdAsync(id)
     const idPlantaCientifica = plantaPopular.idNomeCientifico
@@ -58,7 +58,7 @@ export const getAllPlantaById = async (id: number, quantidade: number) => {
   }
 }
 
-export const getPlantasByFornecedorId = async (id: number) => {
+export const getPlantasByFornecedorIdAsync = async (id: number) => {
   try {
     const plantasFornecedor = await prisma.planta.findMany({
       where: {
