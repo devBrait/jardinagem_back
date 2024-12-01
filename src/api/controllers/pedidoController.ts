@@ -43,7 +43,7 @@ export const cadastraPedido = async (req, res) => {
 export const verificaStatus = async (req, res) => {
   try {
     const id = req.params
-    const status = await pedidoService.retornaStatus(id)
+    const status = await pedidoService.retornaStatusAsync(id)
 
     return res.status(201).json(status)
   } catch (error) {
