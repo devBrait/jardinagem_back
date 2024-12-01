@@ -12,7 +12,6 @@ export const cadastraPedido = async (req, res) => {
       numero_endereco,
       pedidoItems,
     } = req.body
-    console.log(req.body)
 
     const pedidoData = {
       idCliente: idCliente,
@@ -34,7 +33,6 @@ export const cadastraPedido = async (req, res) => {
 
     return res.status(201).send(pedidoResponse)
   } catch (error) {
-    console.log(error.message)
     res.status(500).json({ error: 'erro ao cadastrar pedido' })
   }
 }
@@ -96,7 +94,7 @@ export const getAllPlantasByFornecedorAsync = async (req, res) => {
       idFornecedor,
       idPedido
     )
-    console.log(lstPlantas)
+
     res.status(200).json({ success: true, data: lstPlantas || [] })
   } catch (error) {
     res.status(500).json({ error: 'Erro ao buscar pedidos' })
