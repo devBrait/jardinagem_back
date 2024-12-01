@@ -1,5 +1,3 @@
-import { createAsync } from '../services/plantaService'
-import { getPlantasDisponiveisService } from '../services/plantaService'
 import * as plantaService from '../services/plantaService'
 
 // POST
@@ -61,7 +59,7 @@ export const cadastroPlanta = async (req, res) => {
       pedidoItems: pedidoItems,
     }
 
-    const planta = await createAsync(plantaData)
+    const planta = await plantaService.createAsync(plantaData)
 
     const plantaResponse = {
       ...planta,
@@ -75,12 +73,12 @@ export const cadastroPlanta = async (req, res) => {
   }
 }
 
-export const getFornecedorPlantasDisponiveis = async (req, res) => {
+export const getFornecedorPlantasDisponiveisAsync = async (req, res) => {
   try {
     const id = req.params.id
     const quantidade = req.params.quantidade
 
-    const plantasDisponiveis = await getPlantasDisponiveisService(
+    const plantasDisponiveis = await plantaService.getPlantasDisponiveisAsync(
       id,
       quantidade
     )
@@ -99,10 +97,10 @@ export const getFornecedorPlantasDisponiveis = async (req, res) => {
   }
 }
 
-export const getPlantasByFornecedorId = async (req, res) => {
+export const getPlantasByFornecedorIdAsync = async (req, res) => {
   try {
     const id = req.params.id
-    const plantasFornecedor = await plantaService.getPlantasByFornecedorId(id)
+    const plantasFornecedor = await plantaService.getPlantasByFornecedorIdAsync(id)
 
     const response = plantasFornecedor.map(planta => ({
       id: planta.id,
@@ -131,10 +129,10 @@ export const getPlantasByFornecedorId = async (req, res) => {
   }
 }
 
-export const getPlantaByIdController = async (req, res) => {
+export const getPlantaByIdAsync = async (req, res) => {
   try {
     const { id } = req.params.id
-    const planta = await plantaService.getPlantaByIdService(id)
+    const planta = await plantaService.getPlantaByIdAsync(id)
 
     return res.status(200).json({
       success: true,
